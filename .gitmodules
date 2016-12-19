@@ -1,0 +1,3 @@
+[submodule "ether"]
+	path = ether
+	url = https://github.com/michaelaerni/ether.git
