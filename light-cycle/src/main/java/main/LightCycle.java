@@ -22,6 +22,7 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Mat4;
+import ch.fhnw.util.math.Vec2;
 import ch.fhnw.util.math.Vec3;
 import component.Light;
 import component.Mesh;
@@ -31,6 +32,7 @@ import component.behaviour.FollowBehaviour;
 import component.behaviour.LightCycleBehaviour;
 import component.behaviour.PlayerBehaviour;
 import component.behaviour.PlayerBehaviour2;
+import component.behaviour.PowerUpBehaviour;
 import component.collider.BoxCollider;
 import gameobject.GameObject;
 import inputdevice.*;
@@ -126,6 +128,16 @@ public class LightCycle {
             IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 1f, t);
             IMesh groundMesh = MeshUtilities.createGroundPlane(textureMaterial, 1000);
 
+            final URL objSphere = getClass().getResource("/sphere.obj");
+            final List<IMesh> meshesSphere = new ArrayList<>();
+            try {
+                new ObjReader(objSphere).getMeshes().forEach(meshesSphere::add);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            final List<IMesh> mergedSphere = MeshUtilities.mergeMeshes(meshesSphere);
+            IMesh sphere = mergedSphere.get(0);
+            
             final URL obj = getClass().getResource("/lightcycle/HQ_Moviecycle.obj");
             final List<IMesh> meshes = new ArrayList<>();
             try {
@@ -136,26 +148,35 @@ public class LightCycle {
             final List<IMesh> merged = MeshUtilities.mergeMeshes(meshes);
             IMesh lightCycle1 = merged.get(0);
             IMesh lightCycle2 = lightCycle1.createInstance();
-
+            
             renderManager.addMesh(groundMesh);
             renderManager.addMesh(lightCycle1);
             renderManager.addMesh(lightCycle2);
+            renderManager.addMesh(sphere);
 
             //Ground
             GameObject ground = currentScene.createGameObject();
             ground.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,-1,0), Mat4.rotate(-90,1,0,0)));
             Mesh groundMeshComp = ground.addComponent(Mesh.class);
             groundMeshComp.setMesh(groundMesh);
+            
+            //powerUp
+            GameObject powerup = currentScene.createGameObject();
+            powerup.getTransform().setLocal(Mat4.translate(0, 0, 0));
+            powerup.addComponent(Mesh.class).setMesh(sphere);
+            powerup.addComponent(PowerUpBehaviour.class);
+            powerup.addComponent(BoxCollider.class).setBoundingBox(sphere.getBounds());
 
             // player 1
             GameObject player1 = currentScene.createGameObject();
-            player1.getTransform().setLocal(Mat4.translate(0, 0, -20));
-            player1.addComponent(PlayerBehaviour.class);
+            player1.getTransform().setLocal(Mat4.translate(0, 0, -50));
+            player1.addComponent(PlayerBehaviour2.class);
 
             // player 1 lightCycle1
             float maxExtent = Math.max(lightCycle1.getBounds().getExtentX(), Math.max(lightCycle1.getBounds().getExtentY(), lightCycle1.getBounds().getExtentZ()));
             GameObject player1Vehicle = currentScene.createGameObject(player1.transform);
             player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0)));
+            player1Vehicle.transform.rotate(180, 0, 0, 1);
             player1Vehicle.addComponent(Mesh.class).setMesh(lightCycle1);
             player1Vehicle.addComponent(LightCycleBehaviour.class);
             player1Vehicle.addComponent(BoxCollider.class).setBoundingBox(lightCycle1.getBounds());
@@ -174,13 +195,14 @@ public class LightCycle {
 
             // player 2
             GameObject player2 = currentScene.createGameObject();
-            player2.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, 0, 20), Mat4.rotate(180, 0, 1, 0)));
-            player2.addComponent(PlayerBehaviour2.class);
+            player2.getTransform().setLocal(Mat4.multiply(Mat4.translate(10, 0, 50), Mat4.rotate(180, 0, 1, 0)));
+            player2.addComponent(PlayerBehaviour.class);
 
             // player 2 lightCycle1
             maxExtent = Math.max(lightCycle2.getBounds().getExtentX(), Math.max(lightCycle2.getBounds().getExtentY(), lightCycle2.getBounds().getExtentZ()));
             GameObject player2Vehicle = currentScene.createGameObject(player2.transform);
             player2Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0)));
+            player2Vehicle.transform.rotate(180, 0, 0, 1);
             player2Vehicle.addComponent(Mesh.class).setMesh(lightCycle2);
             player2Vehicle.addComponent(LightCycleBehaviour.class);
             player2Vehicle.addComponent(BoxCollider.class).setBoundingBox(lightCycle2.getBounds());
