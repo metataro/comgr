@@ -13,12 +13,16 @@ public String getLwjglArch(String platform) {
 
 ext {
     lwjglVersion = "3.1.0"
+    lwjglLegacyVersion = "2.9.3"
     lwjglArch = getLwjglArch(System.properties['os.name'])
 }
 
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+
+// Set file encoding to be platform independent
+compileJava.options.encoding = 'UTF-8'
 
 sourceCompatibility = 1.8
 
@@ -39,5 +43,5 @@ dependencies {
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
     compile group: 'org.jetbrains', name: 'annotations', version: '15.0'
 
-    compile files("libs/lwjgl_util.jar")
+    compile "org.lwjgl.lwjgl:lwjgl_util:$lwjglLegacyVersion"
 }
