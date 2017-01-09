@@ -110,6 +110,11 @@ public class Transform extends Component implements SceneGraphNode<Transform> {
         getGameObject().transform.rotate(angle, 0, -1, 0);
     }
 
+    public void scale(final float scale) {
+        this.local = Mat4.multiply(local, Mat4.scale(scale));
+        this.dirty = true;
+    }
+
     @Override
     public void addChild(Transform childTransform) {
         children.add(childTransform);

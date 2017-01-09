@@ -1,6 +1,5 @@
 package main;
 
-import audio.AudioController;
 import audio.AudioMaster;
 import ch.fhnw.ether.controller.event.DefaultEventScheduler;
 import ch.fhnw.ether.controller.event.IEventScheduler;
@@ -14,31 +13,29 @@ import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.DirectionalLight;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.light.SpotLight;
+import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.MeshUtilities;
+import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Mat4;
-import ch.fhnw.util.math.Vec2;
 import ch.fhnw.util.math.Vec3;
 import component.Light;
 import component.Mesh;
 import component.audio.AudioListenerComoponent;
 import component.audio.AudioSourceComponent;
-import component.behaviour.FollowBehaviour;
-import component.behaviour.LightCycleBehaviour;
-import component.behaviour.PlayerBehaviour;
-import component.behaviour.PlayerBehaviour2;
-import component.behaviour.PowerUpBehaviour;
+import component.behaviour.*;
 import component.collider.BoxCollider;
 import gameobject.GameObject;
 import inputdevice.*;
 import inputdevice.Input.Buttons;
 import org.lwjgl.glfw.GLFW;
-import render.OffscreenView;
 import render.View;
 import scene.ProcessType;
 import scene.Scene;
@@ -230,6 +227,14 @@ public class LightCycle {
             hambbeAudioSourceComponent.setLooping(true);
             hambbeAudioSourceComponent.play(AudioMaster.createAudioBufferFromWAV(LightCycle.class.getResource("/daft_punk-the_game_has_changed.wav")));
 
+            // Skybox
+            GameObject skybox = currentScene.createGameObject();
+            IMesh[] skyboxMeshes = createSkyboxMeshes(20000f);
+            for(IMesh currentMesh : skyboxMeshes) {
+                renderManager.addMesh(currentMesh);
+                skybox.addComponent(Mesh.class).setMesh(currentMesh);
+            }
+
             // init scenes
             currentScene.addSystem(ProcessType.Update, new BehaviourSystem());
             currentScene.addSystem(ProcessType.Update, new TransformSystem());
@@ -245,6 +250,49 @@ public class LightCycle {
     public static void main(String[] args) throws InterruptedException, IOException, RenderCommandException {
         LightCycle ls = new LightCycle();
         ls.run();
+    }
+
+    private static IMesh[] createSkyboxMeshes(float scale) {
+        // Bottom and top are skipped for the moment, can't see them anyways
+        final float[][] vertices = {
+            { -scale, scale, scale, scale, scale, scale, scale, -scale, scale, -scale, scale, scale, scale, -scale, scale, -scale, -scale, scale }, // Front
+            { scale, -scale, -scale, scale, -scale, scale, scale, scale, scale, scale, -scale, -scale, scale, scale, scale, scale, scale, -scale }, // Left
+            { -scale, -scale, -scale, scale, -scale, -scale, scale, scale, -scale, -scale, -scale, -scale, scale, scale, -scale, -scale, scale, -scale}, // Back
+            { -scale, -scale, scale, -scale, -scale, -scale, -scale, scale, -scale, -scale, -scale, scale, -scale, scale, -scale, -scale, scale, scale }, // Right
+        };
+        final String[] textureNames = {
+            "/textures/front.png",
+            "/textures/left.png",
+            "/textures/back.png",
+            "/textures/right.png",
+        };
+        final float[][] texCoords = {
+            { 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0 },
+            { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 },
+            { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 },
+            { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 },
+        };
+
+        IMesh[] result = new IMesh[vertices.length];
+        for(int faceIndex = 0; faceIndex < vertices.length; faceIndex++) {
+            IGPUImage currentTexture = null;
+            try {
+                currentTexture = IGPUImage.read(LightCycle.class.getResource(textureNames[faceIndex]));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            IGeometry currentGeometry = DefaultGeometry.createVNM(
+                    vertices[faceIndex],
+                    IGeometry.createNormals(vertices[faceIndex]),
+                    texCoords[faceIndex]);
+
+            result[faceIndex] = new DefaultMesh(IMesh.Primitive.TRIANGLES,
+                    new ColorMapMaterial(currentTexture),
+                    currentGeometry);
+        }
+
+        return result;
     }
 
 }
