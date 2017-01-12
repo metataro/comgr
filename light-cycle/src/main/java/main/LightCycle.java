@@ -28,6 +28,7 @@ import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import component.Light;
 import component.Mesh;
+import component.MeshGroup;
 import component.audio.AudioListenerComoponent;
 import component.audio.AudioSourceComponent;
 import component.behaviour.*;
@@ -46,6 +47,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ThreadFactory;
+import java.util.stream.Collectors;
 
 public class LightCycle {
 
@@ -134,7 +137,7 @@ public class LightCycle {
             }
             final List<IMesh> mergedSphere = MeshUtilities.mergeMeshes(meshesSphere);
             IMesh sphere = mergedSphere.get(0);
-            
+
             final URL obj = getClass().getResource("/lightcycle/HQ_Moviecycle.obj");
             final List<IMesh> meshes = new ArrayList<>();
             try {
@@ -142,13 +145,12 @@ public class LightCycle {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            final List<IMesh> merged = MeshUtilities.mergeMeshes(meshes);
-            IMesh lightCycle1 = merged.get(0);
-            IMesh lightCycle2 = lightCycle1.createInstance();
-            
+            final List<IMesh> lightCycle1 = MeshUtilities.mergeMeshes(meshes);
+            final List<IMesh> lightCycle2 = lightCycle1.stream().map(IMesh::createInstance).collect(Collectors.toList());
+
             renderManager.addMesh(groundMesh);
-            renderManager.addMesh(lightCycle1);
-            renderManager.addMesh(lightCycle2);
+            lightCycle1.forEach(renderManager::addMesh);
+            lightCycle2.forEach(renderManager::addMesh);
             renderManager.addMesh(sphere);
 
             //Ground
@@ -156,7 +158,7 @@ public class LightCycle {
             ground.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,-1,0), Mat4.rotate(-90,1,0,0)));
             Mesh groundMeshComp = ground.addComponent(Mesh.class);
             groundMeshComp.setMesh(groundMesh);
-            
+
             //powerUp
             GameObject powerup = currentScene.createGameObject();
             powerup.getTransform().setLocal(Mat4.translate(0, 0, 0));
@@ -170,13 +172,14 @@ public class LightCycle {
             player1.addComponent(PlayerBehaviour2.class);
 
             // player 1 lightCycle1
-            float maxExtent = Math.max(lightCycle1.getBounds().getExtentX(), Math.max(lightCycle1.getBounds().getExtentY(), lightCycle1.getBounds().getExtentZ()));
             GameObject player1Vehicle = currentScene.createGameObject(player1.transform);
-            player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0)));
             player1Vehicle.transform.rotate(180, 0, 0, 1);
-            player1Vehicle.addComponent(Mesh.class).setMesh(lightCycle1);
+            MeshGroup player1VehicleMeshGroup = player1Vehicle.addComponent(MeshGroup.class);
+            player1VehicleMeshGroup.setMeshes(lightCycle1);
             player1Vehicle.addComponent(LightCycleBehaviour.class);
-            player1Vehicle.addComponent(BoxCollider.class).setBoundingBox(lightCycle1.getBounds());
+            player1Vehicle.addComponent(BoxCollider.class).setBoundingBox(player1VehicleMeshGroup.getBounds());
+            float maxExtent = Math.max(player1VehicleMeshGroup.getBounds().getExtentX(), Math.max(player1VehicleMeshGroup.getBounds().getExtentY(), player1VehicleMeshGroup.getBounds().getExtentZ()));
+            player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0)));
 
             // player 1 camera wrapper
             GameObject playerCameraWrapper = currentScene.createGameObject();
@@ -184,7 +187,7 @@ public class LightCycle {
 
             // player 1 camera
             GameObject player1CameraObject = currentScene.createGameObject(playerCameraWrapper.getTransform());
-            player1CameraObject.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,1,-7.5f), Mat4.rotate(-5,1,0,0)));
+            player1CameraObject.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,0.85f,-5f), Mat4.rotate(-5,1,0,0)));
             component.Camera player1CameraComponent = player1CameraObject.addComponent(component.Camera.class);
             player1CameraComponent.setCamera(player1Camera);
             player1CameraComponent.setTargetView(player1View);
@@ -196,13 +199,14 @@ public class LightCycle {
             player2.addComponent(PlayerBehaviour.class);
 
             // player 2 lightCycle1
-            maxExtent = Math.max(lightCycle2.getBounds().getExtentX(), Math.max(lightCycle2.getBounds().getExtentY(), lightCycle2.getBounds().getExtentZ()));
             GameObject player2Vehicle = currentScene.createGameObject(player2.transform);
-            player2Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0)));
+            MeshGroup player2VehicleMeshGroup = player2Vehicle.addComponent(MeshGroup.class);
+            player2VehicleMeshGroup.setMeshes(lightCycle2);
             player2Vehicle.transform.rotate(180, 0, 0, 1);
-            player2Vehicle.addComponent(Mesh.class).setMesh(lightCycle2);
             player2Vehicle.addComponent(LightCycleBehaviour.class);
-            player2Vehicle.addComponent(BoxCollider.class).setBoundingBox(lightCycle2.getBounds());
+            player2Vehicle.addComponent(BoxCollider.class).setBoundingBox(player2VehicleMeshGroup.getBounds());
+            maxExtent = Math.max(player2VehicleMeshGroup.getBounds().getExtentX(), Math.max(player2VehicleMeshGroup.getBounds().getExtentY(), player2VehicleMeshGroup.getBounds().getExtentZ()));
+            player2Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0)));
 
             // player 2 camera wrapper
             GameObject player2CameraWrapper = currentScene.createGameObject();
@@ -210,7 +214,7 @@ public class LightCycle {
 
             // player 2 camera
             GameObject player2CameraObject = currentScene.createGameObject(player2CameraWrapper.getTransform());
-            player2CameraObject.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,1,-7.5f), Mat4.rotate(-5,1,0,0)));
+            player2CameraObject.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,0.85f,-5f), Mat4.rotate(-5,1,0,0)));
             component.Camera player2CameraComponent = player2CameraObject.addComponent(component.Camera.class);
             player2CameraComponent.setCamera(player2Camera);
             player2CameraComponent.setTargetView(player2View);
@@ -244,6 +248,8 @@ public class LightCycle {
             currentScene.addSystem(ProcessType.Draw, new RenderSystem(renderManager));
         });
 
+        Thread.sleep(100);
+
         Platform.get().run();
     }
 
@@ -255,22 +261,22 @@ public class LightCycle {
     private static IMesh[] createSkyboxMeshes(float scale) {
         // Bottom and top are skipped for the moment, can't see them anyways
         final float[][] vertices = {
-            { -scale, scale, scale, scale, scale, scale, scale, -scale, scale, -scale, scale, scale, scale, -scale, scale, -scale, -scale, scale }, // Front
-            { scale, -scale, -scale, scale, -scale, scale, scale, scale, scale, scale, -scale, -scale, scale, scale, scale, scale, scale, -scale }, // Left
-            { -scale, -scale, -scale, scale, -scale, -scale, scale, scale, -scale, -scale, -scale, -scale, scale, scale, -scale, -scale, scale, -scale}, // Back
-            { -scale, -scale, scale, -scale, -scale, -scale, -scale, scale, -scale, -scale, -scale, scale, -scale, scale, -scale, -scale, scale, scale }, // Right
+                { -scale, scale, scale, scale, scale, scale, scale, -scale, scale, -scale, scale, scale, scale, -scale, scale, -scale, -scale, scale }, // Front
+                { scale, -scale, -scale, scale, -scale, scale, scale, scale, scale, scale, -scale, -scale, scale, scale, scale, scale, scale, -scale }, // Left
+                { -scale, -scale, -scale, scale, -scale, -scale, scale, scale, -scale, -scale, -scale, -scale, scale, scale, -scale, -scale, scale, -scale}, // Back
+                { -scale, -scale, scale, -scale, -scale, -scale, -scale, scale, -scale, -scale, -scale, scale, -scale, scale, -scale, -scale, scale, scale }, // Right
         };
         final String[] textureNames = {
-            "/textures/front.png",
-            "/textures/left.png",
-            "/textures/back.png",
-            "/textures/right.png",
+                "/textures/front.png",
+                "/textures/left.png",
+                "/textures/back.png",
+                "/textures/right.png",
         };
         final float[][] texCoords = {
-            { 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0 },
-            { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 },
-            { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 },
-            { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 },
+                { 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0 },
+                { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 },
+                { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 },
+                { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 },
         };
 
         IMesh[] result = new IMesh[vertices.length];

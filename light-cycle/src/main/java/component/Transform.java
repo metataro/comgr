@@ -171,11 +171,11 @@ public class Transform extends Component implements SceneGraphNode<Transform> {
             this.dirty = false;
             // hacky hack start
             Optional<Mesh> mesh = getGameObject().getComponent(Mesh.class);
+            Optional<MeshGroup> meshGroup = getGameObject().getComponent(MeshGroup.class);
             Optional<Camera> camera = getGameObject().getComponent(Camera.class);
             Optional<Light> light = getGameObject().getComponent(Light.class);
-            if (mesh.isPresent()) {
-                mesh.get().getMesh().setTransform(world);
-            }
+            meshGroup.ifPresent(meshGroup1 -> meshGroup1.getMeshes().forEach(m -> m.setTransform(world)));
+            mesh.ifPresent(mesh1 -> mesh1.getMesh().setTransform(world));
             if (camera.isPresent()) {
                 Vec3 position = getPosition();
                 camera.get().getCamera().setPosition(position);
