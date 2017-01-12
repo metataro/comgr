@@ -121,11 +121,11 @@ public class LightCycle {
             // meshes
             IGPUImage t = null;
             try {
-                t = IGPUImage.read(LightCycle.class.getResource("/textures/space1.jpg"));
+                t = IGPUImage.read(LightCycle.class.getResource("/textures/floor.jpg"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 1f, t);
+            IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 0.8f, t);
             IMesh groundMesh = MeshUtilities.createGroundPlane(textureMaterial, 1000);
 
             final URL objSphere = getClass().getResource("/sphere.obj");
@@ -173,14 +173,14 @@ public class LightCycle {
 
             // player 1 lightCycle1
             GameObject player1Vehicle = currentScene.createGameObject(player1.transform);
-            player1Vehicle.transform.rotate(180, 0, 0, 1);
+            
             MeshGroup player1VehicleMeshGroup = player1Vehicle.addComponent(MeshGroup.class);
             player1VehicleMeshGroup.setMeshes(lightCycle1);
             player1Vehicle.addComponent(LightCycleBehaviour.class);
             player1Vehicle.addComponent(BoxCollider.class).setBoundingBox(player1VehicleMeshGroup.getBounds());
             float maxExtent = Math.max(player1VehicleMeshGroup.getBounds().getExtentX(), Math.max(player1VehicleMeshGroup.getBounds().getExtentY(), player1VehicleMeshGroup.getBounds().getExtentZ()));
-            player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0)));
-
+            player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0), Mat4.rotate(180,0,0,1)));
+            
             // player 1 camera wrapper
             GameObject playerCameraWrapper = currentScene.createGameObject();
             playerCameraWrapper.addComponent(FollowBehaviour.class).setTarget(player1.getTransform());
@@ -195,18 +195,17 @@ public class LightCycle {
 
             // player 2
             GameObject player2 = currentScene.createGameObject();
-            player2.getTransform().setLocal(Mat4.multiply(Mat4.translate(10, 0, 50), Mat4.rotate(180, 0, 1, 0)));
+            player2.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, 0, 50), Mat4.rotate(180, 0, 1, 0)));
             player2.addComponent(PlayerBehaviour.class);
 
             // player 2 lightCycle1
             GameObject player2Vehicle = currentScene.createGameObject(player2.transform);
             MeshGroup player2VehicleMeshGroup = player2Vehicle.addComponent(MeshGroup.class);
             player2VehicleMeshGroup.setMeshes(lightCycle2);
-            player2Vehicle.transform.rotate(180, 0, 0, 1);
             player2Vehicle.addComponent(LightCycleBehaviour.class);
             player2Vehicle.addComponent(BoxCollider.class).setBoundingBox(player2VehicleMeshGroup.getBounds());
             maxExtent = Math.max(player2VehicleMeshGroup.getBounds().getExtentX(), Math.max(player2VehicleMeshGroup.getBounds().getExtentY(), player2VehicleMeshGroup.getBounds().getExtentZ()));
-            player2Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0)));
+            player2Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0),Mat4.rotate(180,0,0,1)));
 
             // player 2 camera wrapper
             GameObject player2CameraWrapper = currentScene.createGameObject();
