@@ -4,6 +4,7 @@ import audio.AudioBuffer;
 import audio.AudioMaster;
 import component.audio.AudioSourceComponent;
 import event.Event;
+import gameobject.GameObject;
 import main.LightCycle;
 
 import java.util.Optional;
@@ -22,9 +23,10 @@ public class PowerUpBehaviour extends Behaviour {
     }
 
     @Override
-    public void onCollision(Event.CollisionEvent collisionEvent) {
+    public void onCollision(GameObject other) {
         Optional<AudioSourceComponent> audio = getGameObject().getComponent(AudioSourceComponent.class);
-        if (audio.isPresent()) {
+        Optional<Behaviour> otherBehaviour = other.getComponent(Behaviour.class);
+        if (audio.isPresent() && otherBehaviour.isPresent() && otherBehaviour.get() instanceof LightCycleBehaviour) {
             audio.get().setLooping(false);
             audio.get().play(powerupsound);
         }

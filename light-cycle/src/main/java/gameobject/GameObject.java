@@ -4,6 +4,9 @@ import ch.fhnw.util.math.Mat4;
 import component.Component;
 import component.ComponentManager;
 import component.Transform;
+import component.behaviour.Behaviour;
+import event.Event;
+import event.EventListener;
 import scene.Scene;
 
 import java.util.ArrayList;

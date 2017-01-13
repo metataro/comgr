@@ -6,10 +6,6 @@ import component.Component;
 import component.collider.Collider;
 import gameobject.GameObject;
 
-/**
- * The Event
- * @author Christian Scheller
- */
 public class Event {
 	public final Object sender;
 

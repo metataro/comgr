@@ -45,7 +45,6 @@ public class Scene {
         for (System system : updateSystems) {
             system.process(elapsed);
         }
-        eventManager.update();
     }
 
     public void draw(float elapsed) {
@@ -79,8 +78,8 @@ public class Scene {
     }
 
     /**
-     * Adds a system to this scene and attach it to a given process type
-     * @param processType The process type
+     * Adds a system to this scene and attach it to a given processSystem type
+     * @param processType The processSystem type
      * @param system The system to add
      */
     public void addSystem(ProcessType processType, System system) {
@@ -99,8 +98,8 @@ public class Scene {
     }
 
     /**
-     * Adds a list of systems to this scene and attach them to a given process type
-     * @param processType The process type
+     * Adds a list of systems to this scene and attach them to a given processSystem type
+     * @param processType The processSystem type
      * @param systems The systems to add
      */
     public void addSystems(ProcessType processType, ArrayList<System> systems) {

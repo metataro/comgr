@@ -2,10 +2,13 @@ package component.behaviour;
 
 import audio.AudioBuffer;
 import audio.AudioMaster;
+import ch.fhnw.util.math.Mat4;
 import component.audio.AudioSourceComponent;
 import event.Event;
+import gameobject.GameObject;
 import main.LightCycle;
 
+import java.util.List;
 import java.util.Optional;
 
 public class LightCycleBehaviour extends Behaviour {
@@ -25,9 +28,9 @@ public class LightCycleBehaviour extends Behaviour {
     }
 
     @Override
-    public void onCollision(Event.CollisionEvent collisionEvent) {
+    public void onCollision(GameObject other) {
         Optional<AudioSourceComponent> audio = getGameObject().getComponent(AudioSourceComponent.class);
-        if (audio.isPresent() && !collisionEvent.collider1.getGameObject().getComponent(PowerUpBehaviour.class).isPresent() && !collisionEvent.collider1.getGameObject().getComponent(PowerUpBehaviour.class).isPresent()) {
+        if (audio.isPresent() && !other.getComponent(PowerUpBehaviour.class).isPresent()) {
             audio.get().setLooping(false);
             audio.get().play(explosion);
             System.out.println("EXPLOSION");
