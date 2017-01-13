@@ -95,7 +95,6 @@ public class PlayerBehaviour extends Behaviour {
 
         updateWallSegments();
 
-        if (this.isButtonNewlyPressed(Input.getButton(Buttons.LEFT), Buttons.LEFT)) {
         if (this.isButtonNewlyPressed(Input.getButton(leftButton), leftButton)) {
             getGameObject().transform.rotateLeft(90);
             addWallSegment();
