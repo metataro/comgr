@@ -8,6 +8,16 @@ public class PlayerBehaviour extends Behaviour {
 
     private final HashSet<String> buttonsCurrentlyPressed = new HashSet<>();
 
+    private String leftButton;
+    private String rightButton;
+    private String speedButton;
+
+    public void setButtons(String left, String right, String speed) {
+        this.leftButton = left;
+        this.rightButton = right;
+        this.speedButton = speed;
+    }
+
     @Override
     public void update(float deltaTime) {
         this.handleControls(deltaTime);
@@ -19,7 +29,7 @@ public class PlayerBehaviour extends Behaviour {
      */
     private float getVelocity(final float deltaTime) {
         float velocity = deltaTime * 20;
-        if (Input.getButton(Buttons.SPEED)) {
+        if (Input.getButton(speedButton)) {
             velocity *= 5;
         }
         return velocity;
@@ -59,24 +69,15 @@ public class PlayerBehaviour extends Behaviour {
      */
     private void handleSteering(final float velocity) {
 
-        //if (Input.getButton(Buttons.FORWARD)) {
-            getGameObject().transform.translateForward(velocity);
-        //}
+        getGameObject().transform.translateForward(velocity);
 
-        //if (Input.getButton(Buttons.BACKWARD)) {
-        //    getGameObject().transform.translateBackward(velocity);
-        //}
-
-        if (this.isButtonNewlyPressed(Input.getButton(Buttons.LEFT), Buttons.LEFT)) {
+        if (this.isButtonNewlyPressed(Input.getButton(leftButton), leftButton)) {
             getGameObject().transform.rotateLeft(90);
         }
 
-        if (this.isButtonNewlyPressed(Input.getButton(Buttons.RIGHT), Buttons.RIGHT)) {
+        if (this.isButtonNewlyPressed(Input.getButton(rightButton), rightButton)) {
             getGameObject().transform.rotateRight(90);
         }
-
-        // if (Input.getButton("Speed")) gameObject.transform.translate(0, velocity, 0);
-        // if (Input.getButton("Speed")) gameObject.transform.translate(0, -velocity, 0);
 
     }
 

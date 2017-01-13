@@ -76,11 +76,16 @@ public class LightCycle {
         InputDeviceLocator.provideKeyboard(keyboard);
         InputDeviceLocator.provideMouse(mouse);
         InputDeviceLocator.provideVirtualButton(new GLFWVirtualButtons(new HashMap<String, Integer>() {{
-            put(Buttons.FORWARD, GLFW.GLFW_KEY_UP);
-            put(Buttons.BACKWARD, GLFW.GLFW_KEY_DOWN);
-            put(Buttons.LEFT, GLFW.GLFW_KEY_LEFT);
-            put(Buttons.RIGHT, GLFW.GLFW_KEY_RIGHT);
-            put(Buttons.SPEED, GLFW.GLFW_KEY_SPACE);
+            put(Buttons.P1_LEFT,        GLFW.GLFW_KEY_A);
+            put(Buttons.P1_RIGHT,       GLFW.GLFW_KEY_D);
+            put(Buttons.P1_SPEED,       GLFW.GLFW_KEY_LEFT_ALT);
+            put(Buttons.P1_LOOK_LEFT,   GLFW.GLFW_KEY_Q);
+            put(Buttons.P1_LOOK_RIGHT,  GLFW.GLFW_KEY_E);
+            put(Buttons.P2_LEFT,        GLFW.GLFW_KEY_LEFT);
+            put(Buttons.P2_RIGHT,       GLFW.GLFW_KEY_RIGHT);
+            put(Buttons.P2_SPEED,       GLFW.GLFW_KEY_SPACE);
+            put(Buttons.P2_LOOK_LEFT,   GLFW.GLFW_KEY_N);
+            put(Buttons.P2_LOOK_RIGHT,  GLFW.GLFW_KEY_M);
         }}));
 
         int w = Platform.get().getMonitors()[0].getWidth();
@@ -169,7 +174,7 @@ public class LightCycle {
             // player 1
             GameObject player1 = currentScene.createGameObject();
             player1.getTransform().setLocal(Mat4.translate(0, 0, -50));
-            player1.addComponent(PlayerBehaviour2.class);
+            player1.addComponent(PlayerBehaviour.class).setButtons(Buttons.P1_LEFT, Buttons.P1_RIGHT, Buttons.P1_SPEED);;
 
             // player 1 lightCycle1
             GameObject player1Vehicle = currentScene.createGameObject(player1.transform);
@@ -180,12 +185,17 @@ public class LightCycle {
             player1Vehicle.addComponent(BoxCollider.class);//.setBoundingBox(player1VehicleMeshGroup.getBounds());
             float maxExtent = Math.max(player1VehicleMeshGroup.getBounds().getExtentX(), Math.max(player1VehicleMeshGroup.getBounds().getExtentY(), player1VehicleMeshGroup.getBounds().getExtentZ()));
             player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.5f, 0), Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0), Mat4.rotate(180,0,0,1)));
+
+            // player 1 camera follow
+            GameObject player1CameraFollow = currentScene.createGameObject();
+            player1CameraFollow.addComponent(FollowBehaviour.class).setTarget(player1.getTransform());
+
             // player 1 camera wrapper
-            GameObject playerCameraWrapper = currentScene.createGameObject();
-            playerCameraWrapper.addComponent(FollowBehaviour.class).setTarget(player1.getTransform());
+            GameObject player1CameraWrapper = currentScene.createGameObject(player1CameraFollow.getTransform());
+            player1CameraWrapper.addComponent(LookAroundBehaviour.class).setButtons(Buttons.P1_LOOK_LEFT, Buttons.P1_LOOK_RIGHT);
 
             // player 1 camera
-            GameObject player1CameraObject = currentScene.createGameObject(playerCameraWrapper.getTransform());
+            GameObject player1CameraObject = currentScene.createGameObject(player1CameraWrapper.getTransform());
             player1CameraObject.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,0.85f,-5f), Mat4.rotate(-5,1,0,0)));
             component.Camera player1CameraComponent = player1CameraObject.addComponent(component.Camera.class);
             player1CameraComponent.setCamera(player1Camera);
@@ -195,7 +205,7 @@ public class LightCycle {
             // player 2
             GameObject player2 = currentScene.createGameObject();
             player2.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, 0, 50), Mat4.rotate(180, 0, 1, 0)));
-            player2.addComponent(PlayerBehaviour.class);
+            player2.addComponent(PlayerBehaviour.class).setButtons(Buttons.P2_LEFT, Buttons.P2_RIGHT, Buttons.P2_SPEED);
 
             // player 2 lightCycle1
             GameObject player2Vehicle = currentScene.createGameObject(player2.transform);
@@ -206,9 +216,13 @@ public class LightCycle {
             maxExtent = Math.max(player2VehicleMeshGroup.getBounds().getExtentX(), Math.max(player2VehicleMeshGroup.getBounds().getExtentY(), player2VehicleMeshGroup.getBounds().getExtentZ()));
             player2Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.5f, 0.5f), Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0),Mat4.rotate(180,0,0,1))));
 
-            // player 2 camera wrapper
-            GameObject player2CameraWrapper = currentScene.createGameObject();
-            player2CameraWrapper.addComponent(FollowBehaviour.class).setTarget(player2.getTransform());
+            // player 1 camera follow
+            GameObject player2CameraFollow = currentScene.createGameObject();
+            player2CameraFollow.addComponent(FollowBehaviour.class).setTarget(player2.getTransform());
+
+            // player 1 camera wrapper
+            GameObject player2CameraWrapper = currentScene.createGameObject(player2CameraFollow.getTransform());
+            player2CameraWrapper.addComponent(LookAroundBehaviour.class).setButtons(Buttons.P2_LOOK_LEFT, Buttons.P2_LOOK_RIGHT);
 
             // player 2 camera
             GameObject player2CameraObject = currentScene.createGameObject(player2CameraWrapper.getTransform());
