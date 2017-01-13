@@ -179,7 +179,7 @@ public class LightCycle {
             player1Vehicle.addComponent(LightCycleBehaviour.class);
             player1Vehicle.addComponent(BoxCollider.class);//.setBoundingBox(player1VehicleMeshGroup.getBounds());
             float maxExtent = Math.max(player1VehicleMeshGroup.getBounds().getExtentX(), Math.max(player1VehicleMeshGroup.getBounds().getExtentY(), player1VehicleMeshGroup.getBounds().getExtentZ()));
-            player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.5f, 1.1f), Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0)));
+            player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.5f, 1.1f), Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0), Mat4.rotate(180,0,0,1)));
             // player 1 camera wrapper
             GameObject playerCameraWrapper = currentScene.createGameObject();
             playerCameraWrapper.addComponent(FollowBehaviour.class).setTarget(player1.getTransform());

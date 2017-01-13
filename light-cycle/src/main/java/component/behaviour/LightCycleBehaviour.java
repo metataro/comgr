@@ -30,10 +30,9 @@ public class LightCycleBehaviour extends Behaviour {
     @Override
     public void onCollision(GameObject other) {
         Optional<AudioSourceComponent> audio = getGameObject().getComponent(AudioSourceComponent.class);
-        if (audio.isPresent() && !other.getComponent(PowerUpBehaviour.class).isPresent()) {
+        if (audio.isPresent() && !other.getComponent(Behaviour.class).toString().contains("PowerUpBehaviour")) {
             audio.get().setLooping(false);
             audio.get().play(explosion);
-            System.out.println("EXPLOSION");
         }
     }
 
