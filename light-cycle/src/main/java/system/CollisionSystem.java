@@ -20,7 +20,7 @@ import java.util.Optional;
 public class CollisionSystem extends System {
 
     @Override
-    public void process(float deltaTime) {
+    public void processSystem(float deltaTime) {
         ArrayList<Collider> colliders = scene.getComponentManager().getComponents(Collider.class);
         for (int i = 0; i < colliders.size(); i++) {
             Collider c1 = colliders.get(i);
@@ -33,13 +33,14 @@ public class CollisionSystem extends System {
         }
     }
 
-    private void checkIntersection(BoxCollider c1, BoxCollider c2) {
-        if (c1.getBoundingBox().intersects(c2.getBoundingBox())) {
-            scene.getEventManager().addEvent(new Event.CollisionEvent(this, c1, c2));
-        }
+    @Override
+    protected void processEvent(Event event) {
+
     }
 
-    @Override
-    public void receive(Event event) {
+    private void checkIntersection(BoxCollider c1, BoxCollider c2) {
+        if (c1.getBoundingBox().intersects(c2.getBoundingBox())) {
+            scene.getEventManager().notify(new Event.CollisionEvent(this, c1, c2));
+        }
     }
 }

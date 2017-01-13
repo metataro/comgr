@@ -12,12 +12,12 @@ public class RenderSystem extends System {
     }
 
     @Override
-    public void process(float deltaTime) {
+    public void processSystem(float deltaTime) {
         this.renderManager.update();
     }
 
     @Override
-    public void receive(Event event) {
+    protected void processEvent(Event event) {
 
     }
 }

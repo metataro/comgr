@@ -1,15 +1,28 @@
 package event;
 
-/**
- * EventListeners can be registered to the EventManager to receive occurred events
- * @author Christian Scheller
- */
-public interface EventListener {
-	
-	/**
-	 * Receives an Event (gets called by the Even Manager)
-	 * @param event The occurred event
-	 */
-	void receive(Event event);
+import java.util.LinkedList;
+import java.util.function.Consumer;
+
+public abstract class EventListener {
+
+	private final LinkedList<Event> pending;
+
+	protected EventListener() {
+		pending = new LinkedList<Event>();
+	}
+
+	public final void receive(Event event) {
+		this.pending.addLast(event);
+	}
+
+	protected void processNext(Consumer<Event> consumer) {
+		consumer.accept(pending.removeFirst());
+	}
+
+	protected void processAllPending(Consumer<Event> consumer) {
+		while (!pending.isEmpty()) {
+			processNext(consumer);
+		}
+	}
 
 }

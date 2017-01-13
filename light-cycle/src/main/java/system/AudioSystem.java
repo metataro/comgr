@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class AudioSystem extends System {
 
     @Override
-    public void process(float deltaTime) {
+    public void processSystem(float deltaTime) {
         ArrayList<AudioListenerComoponent> listeners = scene.getComponentManager().getComponents(AudioListenerComoponent.class);
         ArrayList<AudioSourceComponent> sources = scene.getComponentManager().getComponents(AudioSourceComponent.class);
         for(AudioListenerComoponent listener : listeners) {
@@ -22,7 +22,7 @@ public class AudioSystem extends System {
     }
 
     @Override
-    public void receive(Event event) {
+    protected void processEvent(Event event) {
 
     }
 }

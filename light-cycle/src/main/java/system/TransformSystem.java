@@ -5,12 +5,12 @@ import event.Event;
 public class TransformSystem extends System {
 
     @Override
-    public void process(float deltaTime) {
+    public void processSystem(float deltaTime) {
         scene.getSceneGraph().update();
     }
 
     @Override
-    public void receive(Event event) {
+    protected void processEvent(Event event) {
 
     }
 }

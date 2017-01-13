@@ -184,7 +184,7 @@ public class LightCycle {
             player1Vehicle.addComponent(LightCycleBehaviour.class);
             player1Vehicle.addComponent(BoxCollider.class);//.setBoundingBox(player1VehicleMeshGroup.getBounds());
             float maxExtent = Math.max(player1VehicleMeshGroup.getBounds().getExtentX(), Math.max(player1VehicleMeshGroup.getBounds().getExtentY(), player1VehicleMeshGroup.getBounds().getExtentZ()));
-            player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.5f, 0), Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0), Mat4.rotate(180,0,0,1)));
+            player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.5f, 1.1f), Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0), Mat4.rotate(180,0,0,1)));
 
             // player 1 camera follow
             GameObject player1CameraFollow = currentScene.createGameObject();
@@ -214,7 +214,7 @@ public class LightCycle {
             player2Vehicle.addComponent(LightCycleBehaviour.class);
             player2Vehicle.addComponent(BoxCollider.class);//.setBoundingBox(player2VehicleMeshGroup.getBounds());
             maxExtent = Math.max(player2VehicleMeshGroup.getBounds().getExtentX(), Math.max(player2VehicleMeshGroup.getBounds().getExtentY(), player2VehicleMeshGroup.getBounds().getExtentZ()));
-            player2Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.5f, 0.5f), Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0),Mat4.rotate(180,0,0,1))));
+            player2Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.5f, 1.1f), Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0),Mat4.rotate(180,0,0,1))));
 
             // player 1 camera follow
             GameObject player2CameraFollow = currentScene.createGameObject();
