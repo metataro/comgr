@@ -36,6 +36,7 @@ import component.MeshGroup;
 import component.audio.AudioListenerComoponent;
 import component.audio.AudioSourceComponent;
 import component.behaviour.*;
+import component.behaviour.ai.FilmingAI;
 import component.collider.BoxCollider;
 import component.powerup.SpeedPowerUp;
 import gameobject.GameObject;
@@ -144,6 +145,7 @@ public class LightCycle {
             ILight mainLight = new DirectionalLight(new Vec3(-0.5, -0.5, -0.5f), RGB.GRAY50, RGB.GRAY50);
             ILight light1 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
             ILight light2 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
+            ILight light3 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
             renderManager.addLight(mainLight);
             renderManager.addLight(light1);
             renderManager.addLight(light2);
@@ -159,16 +161,19 @@ public class LightCycle {
             IMesh groundMesh = createGroundPlane(textureMaterial, groundsize);
 
             final List<IMesh> lightCycle1 = loadMeshList("/lightcycle/HQ_Moviecycle.obj");
+
             final List<IMesh> lightCycle2 = lightCycle1.stream().map(IMesh::createInstance).collect(Collectors.toList());
             final IMesh sphere = loadMeshList("/sphere.obj").get(0);
             final IMesh boostPower1 = loadMeshList("/boostPower.obj").get(0);
             final IMesh boostPower2 = boostPower1.createInstance();
+            final List<IMesh> fakeCameraMesh = loadMeshList("/camera.obj");
 
             renderManager.addMesh(groundMesh);
             lightCycle1.forEach(renderManager::addMesh);
             lightCycle2.forEach(renderManager::addMesh);
             renderManager.addMesh(boostPower1);
             renderManager.addMesh(boostPower2);
+            fakeCameraMesh.forEach(renderManager::addMesh);
 
             //Ground
             GameObject ground = currentScene.createGameObject();
@@ -183,6 +188,13 @@ public class LightCycle {
             player1Behaviour.setName("Player 1");
             player1Behaviour.setButtons(Buttons.P1_LEFT, Buttons.P1_RIGHT, Buttons.P1_SPEED);
             player1Behaviour.setWallMaterial("wall_green");
+
+            // fake camera
+            GameObject fakeCamera = currentScene.createGameObject();
+            fakeCamera.getTransform().setLocal(Mat4.translate(0,10f,10f));
+            fakeCamera.addComponent(MeshGroup.class).setMeshes(fakeCameraMesh);
+            fakeCamera.addComponent(FilmingAI.class).setTarget(player1.getTransform());
+            fakeCamera.addComponent(Light.class).setLight(light3);
 
             // player 1 Boostpower
             GameObject player1Boostpower = currentScene.createGameObject(player1.getTransform());

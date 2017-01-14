@@ -95,6 +95,17 @@ public class Transform extends Component implements SceneGraphNode<Transform> {
         return new Vec3(sx, sy, sz);
     }
 
+    public void lookAt(Vec3 point, float lerp) {
+        Vec3 distance = this.getLocalPosition().subtract(point);
+
+        float angle = (float) Math.acos(distance.dot(this.getLocalForward()));
+        Vec3 axis = distance.cross(this.getLocalForward());
+
+        this.rotate(1, 0, 0, 1);
+
+        this.dirty = true;
+    }
+
     public void translate(Vec3 translation) {
         local = Mat4.multiply(Mat4.translate(translation), local);
         this.dirty = true;
