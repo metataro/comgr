@@ -59,7 +59,8 @@ import java.util.stream.Collectors;
 public class LightCycle {
 
     private final float fps = 60;
-
+    private final int groundsize = 1000;
+    
     private IEventScheduler scheduler;
     private Scene currentScene;
 
@@ -145,7 +146,7 @@ public class LightCycle {
                 e.printStackTrace();
             }
             IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 0.8f, t);
-            IMesh groundMesh = createGroundPlane(textureMaterial, 1000);
+            IMesh groundMesh = createGroundPlane(textureMaterial, groundsize);
 
             final URL obj = getClass().getResource("/lightcycle/HQ_Moviecycle.obj");
             final List<IMesh> meshes = new ArrayList<>();
@@ -207,9 +208,8 @@ public class LightCycle {
             	renderManager.addMesh(spheres[i]);
 	            powerup[i] = currentScene.createGameObject();
 	            Random r = new Random(); 
-	            int rx = r.nextInt(2000)-1000;
-	            int ry = r.nextInt(2000)-1000;
-	            java.lang.System.out.println(rx + " " + ry);
+	            int rx = r.nextInt(2*groundsize)-groundsize;
+	            int ry = r.nextInt(2*groundsize)-groundsize;
 	            
 	            powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
 	            powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
