@@ -21,10 +21,18 @@ public class GamePlaySystem extends System {
         if (!newDeadPlayers.isEmpty()) {
             alivePlayers.removeAll(newDeadPlayers);
             deadPlayers.addAll(newDeadPlayers);
+            alivePlayers.removeAll(newDeadPlayers);
+            deadPlayers.addAll(newDeadPlayers);
             if (alivePlayers.size() == 0) {
                 java.lang.System.out.println("UNENTSCHIEDEN!");
+                scene.getEventManager().notify(new Event.DrawEvent(this, newDeadPlayers));
             } else if (alivePlayers.size() == 1) {
                 java.lang.System.out.printf("%s won!\n", alivePlayers.get(0).getName());
+                PlayerBehaviour winner = alivePlayers.get(0);
+                alivePlayers.remove(winner);
+                deadPlayers.add(winner);
+                winner.setAlive(false);
+                scene.getEventManager().notify(new Event.PlayerWonEvent(this, winner));
             }
         }
 
