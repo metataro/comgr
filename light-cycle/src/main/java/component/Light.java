@@ -13,6 +13,18 @@ public class Light extends Component {
     }
 
     public void setLight(ILight light) {
+        if (this.light != null)
+            removeLight();
         this.light = light;
+        getGameObject().getScene().getRenderManager().addLight(light);
+    }
+
+    private void removeLight() {
+        getGameObject().getScene().getRenderManager().removeLight(this.light);
+    }
+
+    @Override
+    public void destroy() {
+        removeLight();
     }
 }

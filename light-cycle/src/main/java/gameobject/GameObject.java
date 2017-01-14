@@ -50,6 +50,13 @@ public class GameObject {
         return component == null ? Optional.empty() : Optional.of((T)component);
     }
 
+    public void destroy() {
+        components.values().forEach(c -> {
+            scene.getComponentManager().removeComponent(c);
+            c.destroy();
+        });
+    }
+
     public Scene getScene() {
         return scene;
     }

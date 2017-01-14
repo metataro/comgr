@@ -9,10 +9,22 @@ public class Mesh extends Component {
     private IMesh mesh;
 
     public void setMesh(IMesh mesh) {
+        if (this.mesh != null)
+            removeMesh();
         this.mesh = mesh;
+        getGameObject().getScene().getRenderManager().addMesh(mesh);
     }
 
     public IMesh getMesh() {
         return mesh;
+    }
+
+    private void removeMesh() {
+        getGameObject().getScene().getRenderManager().removeMesh(mesh);
+    }
+
+    @Override
+    public void destroy() {
+        removeMesh();
     }
 }

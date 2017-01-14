@@ -232,4 +232,14 @@ public class Transform extends Component implements SceneGraphNode<Transform> {
     public static Transform createRoot() {
         return new Transform();
     }
+
+    @Override
+    public void destroy() {
+        if (parent != null) {
+            parent.addChildren(children);
+        } else {
+            children.forEach(c -> c.parent = null);
+        }
+        children.clear();
+    }
 }
