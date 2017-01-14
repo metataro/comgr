@@ -1,7 +1,11 @@
 package component.behaviour;
 
+import ch.fhnw.ether.image.IGPUImage;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.MeshUtilities;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
+import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.MathUtilities;
 import ch.fhnw.util.math.Vec3;
@@ -11,6 +15,9 @@ import component.collider.BoxCollider;
 import gameobject.GameObject;
 import inputdevice.Input;
 import inputdevice.Input.Buttons;
+import main.LightCycle;
+
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,18 +29,24 @@ public class PlayerBehaviour extends Behaviour {
     private String leftButton;
     private String rightButton;
     private String speedButton;
+    private IMaterial wallMaterial;
+    private String material;
 
-    public void setButtons(String left, String right, String speed) {
+    public void setButtons(String left, String right, String speed, String m) {
         this.leftButton = left;
         this.rightButton = right;
         this.speedButton = speed;
+        this.material = m;
+        System.out.println(material);
+        initWallSegments();
     }
+    
 
     private final LinkedList<GameObject> wallSegments = new LinkedList<>();
 
     @Override
     public void init() {
-        initWallSegments();
+        
     }
 
     @Override
@@ -120,6 +133,14 @@ public class PlayerBehaviour extends Behaviour {
     }
 
     private void initWallSegments() {
+    	IGPUImage t = null;
+    	
+        try {
+            t = IGPUImage.read(LightCycle.class.getResource("/textures/"+material+".png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        wallMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 1f, t);
         addWallSegment(getTransform().getLocalPosition(), getTransform().getLocalEulerAngles());
     }
 
@@ -145,7 +166,7 @@ public class PlayerBehaviour extends Behaviour {
     }
 
     private IMesh createWallMesh() {
-        IMesh mesh = MeshUtilities.createCube();
+        IMesh mesh = MeshUtilities.createCube(wallMaterial);
         getGameObject().getScene().getRenderManager().addMesh(mesh);
         return mesh;
     }

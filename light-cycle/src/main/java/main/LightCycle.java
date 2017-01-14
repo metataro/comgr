@@ -16,12 +16,16 @@ import ch.fhnw.ether.scene.light.SpotLight;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.MeshUtilities;
+import ch.fhnw.ether.scene.mesh.IMesh.Flag;
+import ch.fhnw.ether.scene.mesh.IMesh.Primitive;
+import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.ArrayUtilities;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Mat4;
@@ -131,7 +135,7 @@ public class LightCycle {
                 e.printStackTrace();
             }
             IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 0.8f, t);
-            IMesh groundMesh = MeshUtilities.createGroundPlane(textureMaterial, 1000);
+            IMesh groundMesh = createGroundPlane(textureMaterial, 1000);
 
             final URL objSphere = getClass().getResource("/sphere.obj");
             final List<IMesh> meshesSphere = new ArrayList<>();
@@ -174,7 +178,7 @@ public class LightCycle {
             // player 1
             GameObject player1 = currentScene.createGameObject();
             player1.getTransform().setLocal(Mat4.translate(0, 0, -50));
-            player1.addComponent(PlayerBehaviour.class).setButtons(Buttons.P1_LEFT, Buttons.P1_RIGHT, Buttons.P1_SPEED);;
+            player1.addComponent(PlayerBehaviour.class).setButtons(Buttons.P1_LEFT, Buttons.P1_RIGHT, Buttons.P1_SPEED, "wall_green");
 
             // player 1 lightCycle1
             GameObject player1Vehicle = currentScene.createGameObject(player1.transform);
@@ -205,7 +209,7 @@ public class LightCycle {
             // player 2
             GameObject player2 = currentScene.createGameObject();
             player2.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, 0, 50), Mat4.rotate(180, 0, 1, 0)));
-            player2.addComponent(PlayerBehaviour.class).setButtons(Buttons.P2_LEFT, Buttons.P2_RIGHT, Buttons.P2_SPEED);
+            player2.addComponent(PlayerBehaviour.class).setButtons(Buttons.P2_LEFT, Buttons.P2_RIGHT, Buttons.P2_SPEED, "wall_yellow");
 
             // player 2 lightCycle1
             GameObject player2Vehicle = currentScene.createGameObject(player2.transform);
@@ -269,6 +273,20 @@ public class LightCycle {
         LightCycle ls = new LightCycle();
         ls.run();
     }
+    
+	public static IMesh createGroundPlane(IMaterial material, float extent) {
+		float e = extent;
+		float z = 0;
+		float[] v = { -e, -e, z, e, -e, z, e, e, z, -e, -e, z, e, e, z, -e, e, z };
+		float[] n = MeshUtilities.UNIT_QUAD_NORMALS;
+		float[] m = MeshUtilities.UNIT_QUAD_TEX_COORDS;
+		IGeometry g = requireTexCoords(material) ? DefaultGeometry.createVNM(v, n, m) :  DefaultGeometry.createVN(v, n);
+		return new DefaultMesh(Primitive.TRIANGLES, material, g, Queue.TRANSPARENCY,  Flag.DONT_CAST_SHADOW);
+	}
+	
+	private static boolean requireTexCoords(IMaterial material) {
+		return ArrayUtilities.contains(material.getRequiredAttributes(), IGeometry.COLOR_MAP_ARRAY);
+	}
 
     private static IMesh[] createSkyboxMeshes(float scale) {
         // Bottom and top are skipped for the moment, can't see them anyways
