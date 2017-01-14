@@ -3,6 +3,7 @@ package component.behaviour;
 import audio.AudioBuffer;
 import audio.AudioMaster;
 import ch.fhnw.util.math.Mat4;
+import ch.fhnw.util.math.Vec3;
 import component.Transform;
 import component.audio.AudioSourceComponent;
 import event.Event;
@@ -15,8 +16,11 @@ import java.util.Random;
 public class PowerUpBehaviour extends Behaviour {
 
     private AudioBuffer powerupsound;
-    
 
+    private float minY = 0.15f;
+    private float maxY = 0.45f;
+	private float bumpSpeed = 2f;
+	private float modifier = 0;
 
     @Override
     public void init() {
@@ -26,7 +30,15 @@ public class PowerUpBehaviour extends Behaviour {
         
     }
 
-    @Override
+	@Override
+	public void update(float deltaTime) {
+    	Vec3 position = getTransform().getLocalPosition();
+		float targetY = minY + Math.abs(maxY - minY) * (float)Math.sin(modifier) / 2;
+		modifier += bumpSpeed*deltaTime;
+		getTransform().translate(0, targetY - position.y, 0);
+	}
+
+	@Override
     public void onCollision(GameObject other) {
     	
 	        Optional<AudioSourceComponent> audio = getGameObject().getComponent(AudioSourceComponent.class);
