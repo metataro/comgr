@@ -339,7 +339,7 @@ public class LightCycle {
                 currentTexture = IGPUImage.read(LightCycle.class.getResource(textureNames[faceIndex]));
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+            } 
 
             IGeometry currentGeometry = DefaultGeometry.createVNM(
                     vertices[faceIndex],
