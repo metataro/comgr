@@ -137,10 +137,12 @@ public class LightCycle {
             ICamera player2Camera = new Camera(Vec3.ZERO, Vec3.Z);
 
             // lights
-            ILight mainLight = new DirectionalLight(new Vec3(-0.5, -0.5, -0.5f), RGB.GRAY50, RGB.GRAY50);
-            ILight light1 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
-            ILight light2 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
-            currentScene.getRenderManager().addLight(mainLight);
+            ILight mainLight1 = new DirectionalLight(new Vec3(0.2, -1, -0.2), RGB.WHITE, RGB.WHITE);
+            ILight mainLight2 = new DirectionalLight(new Vec3(-0.2, -1, 0.2), RGB.WHITE, RGB.WHITE);
+            //ILight light1 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
+            //ILight light2 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
+            currentScene.getRenderManager().addLight(mainLight1);
+            currentScene.getRenderManager().addLight(mainLight2);
 
             // meshes
             IGPUImage t = null;
@@ -155,7 +157,13 @@ public class LightCycle {
             final List<IMesh> lightCycle1 = loadMeshList("/lightcycle/HQ_Moviecycle.obj");
             final List<IMesh> lightCycle2 = lightCycle1.stream().map(IMesh::createInstance).collect(Collectors.toList());
             final IMesh sphere = loadMeshList("/sphere.obj").get(0);
-            final IMesh boostPower1 = loadMeshList("/boostPower.obj").get(0);
+            IGPUImage t2 = null;
+            try {
+                t2 = IGPUImage.read(LightCycle.class.getResource("/textures/glow.png"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            final IMesh boostPower1 = MeshUtilities.createQuad(new ShadedMaterial(RGB.WHITE, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 10, 1, t2), Queue.TRANSPARENCY, EnumSet.of(Flag.DONT_CAST_SHADOW));//loadMeshList("/boostPower.obj").get(0);
             final IMesh boostPower2 = boostPower1.createInstance();
 
             //Ground
@@ -174,7 +182,7 @@ public class LightCycle {
 
             // player 1 Boostpower
             GameObject player1Boostpower = currentScene.createGameObject(player1.getTransform());
-            player1Boostpower.getTransform().setLocal(Mat4.translate(0, -0.35f, 0));
+            player1Boostpower.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.49999f, 1), Mat4.scale(0.6f, 1, 1), Mat4.rotate(-90, 1, 0, 0)));
             player1Boostpower.addComponent(Mesh.class).setMesh(boostPower1);
 
             player1Behaviour.setBoostPowerObject(player1Boostpower);
@@ -195,7 +203,7 @@ public class LightCycle {
             GameObject[] powerup = new GameObject[nPower];
             IMesh[] spheres = new IMesh[nPower];
             //add nPower powerups
-            for(int i = 0; i < nPower / 2; i++) {
+            for(int i = 0; i < nPower; i++) {
                 spheres[i] = sphere.createInstance();
                 powerup[i] = currentScene.createGameObject();
                 Random r = new Random();
@@ -205,7 +213,7 @@ public class LightCycle {
                 powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
                 powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
                 powerup[i].addComponent(PowerUpBehaviour.class);
-                powerup[i].addComponent(SpeedPowerUp.class);
+                powerup[i].addComponent(SpeedPowerUp.class).setBoostTime(4);
                 powerup[i].addComponent(BoxCollider.class).setTrigger(true);
             }
             for(int i = nPower / 2; i < nPower; i++) {
@@ -235,7 +243,7 @@ public class LightCycle {
             player1CameraObject.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,0.85f,-5f), Mat4.rotate(-5,1,0,0)));
             component.Camera player1CameraComponent = player1CameraObject.addComponent(component.Camera.class);
             player1CameraComponent.setState(player1View, player1Camera);
-            player1CameraObject.addComponent(Light.class).setLight(light1);
+            //player1CameraObject.addComponent(Light.class).setLight(light1);
 
             // player 2
             GameObject player2 = currentScene.createGameObject();
@@ -247,7 +255,7 @@ public class LightCycle {
 
             // player 2 Boostpower
             GameObject player2Boostpower = currentScene.createGameObject(player2.getTransform());
-            player2Boostpower.getTransform().setLocal(Mat4.translate(0, -0.3f, 0));
+            player2Boostpower.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.49999f, 1), Mat4.scale(0.6f, 1, 1), Mat4.rotate(-90, 1, 0, 0)));
             player2Boostpower.addComponent(Mesh.class).setMesh(boostPower2);
 
             player2Behaviour.setBoostPowerObject(player2Boostpower);
@@ -276,7 +284,7 @@ public class LightCycle {
             player2CameraObject.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,0.85f,-5f), Mat4.rotate(-5,1,0,0)));
             component.Camera player2CameraComponent = player2CameraObject.addComponent(component.Camera.class);
             player2CameraComponent.setState(player2View, player2Camera);
-            player2CameraObject.addComponent(Light.class).setLight(light2);
+            //player2CameraObject.addComponent(Light.class).setLight(light2);
 
             // attach listeners to game objects
             player1CameraObject.addComponent(AudioListenerComoponent.class).setAudioListener(currentScene.getAudioController().getAudioListener(0));
@@ -377,8 +385,7 @@ public class LightCycle {
         float[] c = RGBA.toArray(Arrays.asList(color, color, color, color, color, color));
         float[] m = MeshUtilities.UNIT_QUAD_TEX_COORDS;
         IGeometry testGeometry = DefaultGeometry.createVCM(v, c, m);
-        IMesh panelMesh = new DefaultMesh(Primitive.TRIANGLES, new PanelMaterial(texture), testGeometry, Queue.SCREEN_SPACE_OVERLAY);
-        return panelMesh;
+        return new DefaultMesh(Primitive.TRIANGLES, new PanelMaterial(texture), testGeometry, Queue.SCREEN_SPACE_OVERLAY);
     }
 
 }
