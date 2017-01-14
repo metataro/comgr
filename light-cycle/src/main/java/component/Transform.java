@@ -53,7 +53,11 @@ public class Transform extends Component implements SceneGraphNode<Transform> {
     }
 
     public Vec3 getForward() {
-        return new Vec3(world.m02, world.m12, world.m22);
+        return new Vec3(world.m02, world.m12, world.m22).normalize();
+    }
+
+    public Vec3 getLocalForward() {
+        return new Vec3(local.m02, local.m12, local.m22).normalize();
     }
 
     public Vec3 getUp() {
@@ -102,7 +106,7 @@ public class Transform extends Component implements SceneGraphNode<Transform> {
     }
 
     public void translateForward(float scaleFactor) {
-        this.translate(this.getForward().scale(scaleFactor));
+        this.translate(this.getLocalForward().scale(scaleFactor));
     }
 
     public void translateBackward(float scaleFactor) {

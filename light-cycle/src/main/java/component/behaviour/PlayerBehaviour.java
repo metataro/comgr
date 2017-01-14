@@ -145,13 +145,10 @@ public class PlayerBehaviour extends Behaviour {
      * @param velocity Current velocity.
      */
     private void handleSteering(final float velocity) {
-        getGameObject().transform.translateForward(velocity);
 
         //if (Input.getButton(Buttons.BACKWARD)) {
         //    getGameObject().transform.translateBackward(velocity);
         //}
-
-        updateWallSegments();
 
         if (this.isButtonNewlyPressed(Input.getButton(leftButton), leftButton)) {
             getGameObject().transform.rotateLeft(90);
@@ -163,6 +160,9 @@ public class PlayerBehaviour extends Behaviour {
             addWallSegment();
         }
 
+        getGameObject().transform.translateForward(velocity);
+
+        updateWallSegments();
     }
 
     private void updateWallSegments() {

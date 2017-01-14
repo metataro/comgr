@@ -13,8 +13,8 @@ public abstract class System extends EventListener {
     }
 
     public void process(float deltaTime) {
-        processSystem(deltaTime);
         processAllPending(this::processEvent);
+        processSystem(deltaTime);
     }
 
     protected void processSystem(float deltaTime) {}

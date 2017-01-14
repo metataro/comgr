@@ -28,6 +28,7 @@ import ch.fhnw.util.ArrayUtilities;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Mat4;
+import ch.fhnw.util.math.Vec2;
 import ch.fhnw.util.math.Vec3;
 import component.Light;
 import component.Mesh;
@@ -42,6 +43,7 @@ import inputdevice.*;
 import inputdevice.Input.Buttons;
 import org.lwjgl.glfw.GLFW;
 import render.View;
+import render.mesh.material.PanelMaterial;
 import render.mesh.material.SkyboxMaterial;
 import scene.ProcessType;
 import scene.Scene;
@@ -49,10 +51,7 @@ import system.*;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class LightCycle {
@@ -364,6 +363,26 @@ public class LightCycle {
         }
 
         return result;
+    }
+
+    private static IMesh createPanel(Vec2 position, Vec2 size, IGPUImage texture, RGBA color) {
+        float x0 = position.x;
+        float y0 = position.y;
+        float x1 = x0 + size.x;
+        float y1 = y0 + size.y;
+        float[] v = {
+                x0, y0, 0,
+                x1, y0, 0,
+                x1, y1, 0,
+                x0, y0, 0,
+                x1, y1, 0,
+                x0, y1, 0,
+        };
+        float[] c = RGBA.toArray(Arrays.asList(color, color, color, color, color, color));
+        float[] m = MeshUtilities.UNIT_QUAD_TEX_COORDS;
+        IGeometry testGeometry = DefaultGeometry.createVCM(v, c, m);
+        IMesh panelMesh = new DefaultMesh(Primitive.TRIANGLES, new PanelMaterial(texture), testGeometry, Queue.SCREEN_SPACE_OVERLAY);
+        return panelMesh;
     }
 
 }
