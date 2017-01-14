@@ -26,7 +26,10 @@ public class PlayerBehaviour extends Behaviour {
 
     private final HashSet<String> buttonsCurrentlyPressed = new HashSet<>();
 
+    private final LinkedList<GameObject> wallSegments = new LinkedList<>();
+
     private boolean alive;
+    private float boostTime = 0;
 
     private String name;
 
@@ -65,7 +68,9 @@ public class PlayerBehaviour extends Behaviour {
         initWallSegments();
     }
 
-    private final LinkedList<GameObject> wallSegments = new LinkedList<>();
+    public void addBoostTime(float boostTime) {
+        this.boostTime += boostTime;
+    }
 
     @Override
     public void init() {
@@ -74,6 +79,12 @@ public class PlayerBehaviour extends Behaviour {
 
     @Override
     public void update(float deltaTime) {
+        if (boostTime > 0)
+            boostTime -= deltaTime;
+
+        if (boostTime < 0)
+            boostTime = 0;
+
         if (isAlive())
             this.handleControls(deltaTime);
     }
@@ -84,7 +95,10 @@ public class PlayerBehaviour extends Behaviour {
      */
     private float getVelocity(final float deltaTime) {
         float velocity = deltaTime * 20;
-        if (Input.getButton(speedButton)) {
+        //if (Input.getButton(speedButton)) {
+        //    velocity *= 5;
+        //}
+        if (boostTime > 0) {
             velocity *= 5;
         }
         return velocity;

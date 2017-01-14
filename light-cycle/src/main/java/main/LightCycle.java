@@ -37,6 +37,7 @@ import component.audio.AudioListenerComoponent;
 import component.audio.AudioSourceComponent;
 import component.behaviour.*;
 import component.collider.BoxCollider;
+import component.powerup.SpeedPowerUp;
 import gameobject.GameObject;
 import inputdevice.*;
 import inputdevice.Input.Buttons;
@@ -213,7 +214,8 @@ public class LightCycle {
 	            
 	            powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
 	            powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
-	            powerup[i].addComponent(PowerUpBehaviour.class);
+                powerup[i].addComponent(PowerUpBehaviour.class);
+                powerup[i].addComponent(SpeedPowerUp.class).setBoostTime(3);
 	            powerup[i].addComponent(BoxCollider.class).setTrigger(true);
             }
             

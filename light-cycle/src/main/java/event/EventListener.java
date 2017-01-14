@@ -7,7 +7,7 @@ public abstract class EventListener {
 
 	private final LinkedList<Event> pending;
 
-	protected EventListener() {
+	public EventListener() {
 		pending = new LinkedList<Event>();
 	}
 

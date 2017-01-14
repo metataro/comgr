@@ -4,6 +4,7 @@ import audio.AudioBuffer;
 import audio.AudioMaster;
 import ch.fhnw.util.math.Mat4;
 import component.audio.AudioSourceComponent;
+import component.powerup.PowerUp;
 import event.Event;
 import gameobject.GameObject;
 import main.LightCycle;
@@ -34,11 +35,26 @@ public class LightCycleBehaviour extends Behaviour {
     }
 
     @Override
+    public void update(float deltaTime) {
+        if (playerBehaviour != null && !playerBehaviour.isAlive()) {
+            getGameObject().getComponent(AudioSourceComponent.class).ifPresent(a -> {
+                if (a.isBufferPlaying(tronEngine)) {
+                    a.setLooping(false);
+                    a.stop();
+                }
+            });
+        }
+    }
+
+    @Override
     public void onCollision(GameObject other) {
         Optional<AudioSourceComponent> audio = getGameObject().getComponent(AudioSourceComponent.class);
-        if (audio.isPresent() && !collided) {
-            audio.get().setLooping(false);
-            audio.get().play(explosion);
+        if (!collided) {
+            audio.ifPresent(a -> {
+                a.setGain(1f);
+                a.setLooping(false);
+                a.play(explosion);
+            });
             collided = true;
             if (playerBehaviour != null) {
                 playerBehaviour.setAlive(false);
@@ -47,4 +63,8 @@ public class LightCycleBehaviour extends Behaviour {
         }
     }
 
+    @Override
+    public void onTrigger(GameObject other) {
+        other.getComponent(PowerUp.class).ifPresent(powerUp -> powerUp.apply(playerBehaviour.getGameObject()));
+    }
 }
