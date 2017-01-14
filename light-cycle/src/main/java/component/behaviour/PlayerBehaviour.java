@@ -79,12 +79,6 @@ public class PlayerBehaviour extends Behaviour {
 
     @Override
     public void update(float deltaTime) {
-        if (boostTime > 0)
-            boostTime -= deltaTime;
-
-        if (boostTime < 0)
-            boostTime = 0;
-
         if (isAlive())
             this.handleControls(deltaTime);
     }
@@ -95,10 +89,8 @@ public class PlayerBehaviour extends Behaviour {
      */
     private float getVelocity(final float deltaTime) {
         float velocity = deltaTime * 20;
-        //if (Input.getButton(speedButton)) {
-        //    velocity *= 5;
-        //}
-        if (boostTime > 0) {
+        if (Input.getButton(speedButton) && boostTime > 0) {
+            boostTime = Math.max(boostTime - deltaTime, 0);
             velocity *= 5;
         }
         return velocity;

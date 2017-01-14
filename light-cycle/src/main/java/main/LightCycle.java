@@ -200,7 +200,7 @@ public class LightCycle {
             final List<IMesh> mergedSphere = MeshUtilities.mergeMeshes(meshesSphere);
             IMesh sphere = mergedSphere.get(0);
             
-            int nPower = 5;
+            int nPower = 10;
             GameObject[] powerup = new GameObject[nPower];
             IMesh[] spheres = new IMesh[nPower];
             //add nPower powerups
