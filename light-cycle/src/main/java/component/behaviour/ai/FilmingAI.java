@@ -19,6 +19,9 @@ public class FilmingAI extends Behaviour {
 
     @Override
     public void update(float deltaTime) {
+
+        getTransform().translate(velocity);
+
         Vec3 diffXZ =
                 new Vec3(target.getLocalPosition().x, 0, target.getLocalPosition().z)
                 .subtract
@@ -32,7 +35,7 @@ public class FilmingAI extends Behaviour {
             velocity = velocity.add(diffXZ.normalize().scale(0.01f));
         }
 
-        if (velocity.length() > 1) velocity = velocity.scale(0.9f);
+        if (velocity.length() > 0.8f) velocity = velocity.scale(0.5f);
 
         double temp = getTransform().getLocalForward().dot(diffXZ.normalize());
 
@@ -40,9 +43,7 @@ public class FilmingAI extends Behaviour {
         else if (temp < -1) temp = -1;
         float angle = (float) Math.acos(temp);
 
-        //getTransform().rotate(MathUtilities.RADIANS_TO_DEGREES * angle, 0, 1, 0);
-
-        getTransform().translate(velocity);
+        getTransform().rotate(MathUtilities.RADIANS_TO_DEGREES * angle, 0, 1, 0);
 
     }
 
