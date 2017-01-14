@@ -42,6 +42,7 @@ import inputdevice.*;
 import inputdevice.Input.Buttons;
 import org.lwjgl.glfw.GLFW;
 import render.View;
+import render.mesh.material.SkyboxMaterial;
 import scene.ProcessType;
 import scene.Scene;
 import system.*;
@@ -279,7 +280,7 @@ public class LightCycle {
 
             // Skybox
             GameObject skybox = currentScene.createGameObject();
-            IMesh[] skyboxMeshes = createSkyboxMeshes(10000f);
+            IMesh[] skyboxMeshes = createSkyboxMeshes(500f);
             for(IMesh currentMesh : skyboxMeshes) {
                 renderManager.addMesh(currentMesh);
                 skybox.addComponent(Mesh.class).setMesh(currentMesh);
@@ -346,7 +347,7 @@ public class LightCycle {
                     texCoords[faceIndex]);
 
             result[faceIndex] = new DefaultMesh(IMesh.Primitive.TRIANGLES,
-                    new ColorMapMaterial(currentTexture),
+                    new SkyboxMaterial(currentTexture),
                     currentGeometry);
         }
 
