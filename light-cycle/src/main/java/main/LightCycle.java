@@ -21,7 +21,6 @@ import ch.fhnw.ether.scene.mesh.IMesh.Primitive;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 import ch.fhnw.ether.view.IView;
@@ -54,7 +53,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 public class LightCycle {
@@ -73,6 +71,18 @@ public class LightCycle {
             }
             scheduler.repaint();
         }, fps);
+    }
+
+    private List<IMesh> loadMeshList(String resource) {
+        final URL obj = getClass().getResource(resource);
+        final List<IMesh> meshes = new ArrayList<>();
+        try {
+            new ObjReader(obj).getMeshes().forEach(meshes::add);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return MeshUtilities.mergeMeshes(meshes);
+
     }
 
     public void run() throws IOException, RenderCommandException, InterruptedException {
@@ -149,20 +159,17 @@ public class LightCycle {
             IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 0.8f, t);
             IMesh groundMesh = createGroundPlane(textureMaterial, groundsize);
 
-            final URL obj = getClass().getResource("/lightcycle/HQ_Moviecycle.obj");
-            final List<IMesh> meshes = new ArrayList<>();
-            try {
-                new ObjReader(obj).getMeshes().forEach(meshes::add);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            final List<IMesh> lightCycle1 = MeshUtilities.mergeMeshes(meshes);
+            final List<IMesh> lightCycle1 = loadMeshList("/lightcycle/HQ_Moviecycle.obj");
             final List<IMesh> lightCycle2 = lightCycle1.stream().map(IMesh::createInstance).collect(Collectors.toList());
+            final IMesh sphere = loadMeshList("/sphere.obj").get(0);
+            final IMesh boostPower1 = loadMeshList("/boostPower.obj").get(0);
+            final IMesh boostPower2 = boostPower1.createInstance();
 
             renderManager.addMesh(groundMesh);
             lightCycle1.forEach(renderManager::addMesh);
             lightCycle2.forEach(renderManager::addMesh);
-            
+            renderManager.addMesh(boostPower1);
+            renderManager.addMesh(boostPower2);
 
             //Ground
             GameObject ground = currentScene.createGameObject();
@@ -178,6 +185,13 @@ public class LightCycle {
             player1Behaviour.setButtons(Buttons.P1_LEFT, Buttons.P1_RIGHT, Buttons.P1_SPEED);
             player1Behaviour.setWallMaterial("wall_green");
 
+            // player 1 Boostpower
+            GameObject player1Boostpower = currentScene.createGameObject(player1.getTransform());
+            player1Boostpower.getTransform().setLocal(Mat4.translate(0, -0.3f, 0));
+            player1Boostpower.addComponent(Mesh.class).setMesh(boostPower1);
+
+            player1Behaviour.setBoostPowerObject(player1Boostpower);
+
             // player 1 lightCycle1
             GameObject player1Vehicle = currentScene.createGameObject(player1.transform);
             
@@ -189,28 +203,17 @@ public class LightCycle {
             float maxExtent = Math.max(player1VehicleMeshGroup.getBounds().getExtentX(), Math.max(player1VehicleMeshGroup.getBounds().getExtentY(), player1VehicleMeshGroup.getBounds().getExtentZ()));
             player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.5f, 1.1f), Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0), Mat4.rotate(180,0,0,1)));
 
-            //create powerUp mesh
-            final URL objSphere = getClass().getResource("/sphere.obj");
-            final List<IMesh> meshesSphere = new ArrayList<>();
-            try {
-                new ObjReader(objSphere).getMeshes().forEach(meshesSphere::add);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            final List<IMesh> mergedSphere = MeshUtilities.mergeMeshes(meshesSphere);
-            IMesh sphere = mergedSphere.get(0);
-            
             int nPower = 10;
             GameObject[] powerup = new GameObject[nPower];
             IMesh[] spheres = new IMesh[nPower];
             //add nPower powerups
-            for(int i =0; i<nPower; i++){ 
+            for(int i = 0; i < nPower; i++) {
             	spheres[i] = sphere.createInstance();
             	renderManager.addMesh(spheres[i]);
 	            powerup[i] = currentScene.createGameObject();
 	            Random r = new Random(); 
-	            int rx = r.nextInt(2*groundsize)-groundsize;
-	            int ry = r.nextInt(2*groundsize)-groundsize;
+	            int rx = r.nextInt(2 * groundsize) - groundsize;
+	            int ry = r.nextInt(2 * groundsize) - groundsize;
 	            
 	            powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
 	            powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
@@ -243,6 +246,13 @@ public class LightCycle {
             player2Behaviour.setButtons(Buttons.P2_LEFT, Buttons.P2_RIGHT, Buttons.P2_SPEED);
             player2Behaviour.setWallMaterial("wall_yellow");
 
+            // player 2 Boostpower
+            GameObject player2Boostpower = currentScene.createGameObject(player2.getTransform());
+            player2Boostpower.getTransform().setLocal(Mat4.translate(0, -0.3f, 0));
+            player2Boostpower.addComponent(Mesh.class).setMesh(boostPower2);
+
+            player2Behaviour.setBoostPowerObject(player2Boostpower);
+
             // player 2 lightCycle1
             GameObject player2Vehicle = currentScene.createGameObject(player2.transform);
             MeshGroup player2VehicleMeshGroup = player2Vehicle.addComponent(MeshGroup.class);
@@ -253,11 +263,11 @@ public class LightCycle {
             maxExtent = Math.max(player2VehicleMeshGroup.getBounds().getExtentX(), Math.max(player2VehicleMeshGroup.getBounds().getExtentY(), player2VehicleMeshGroup.getBounds().getExtentZ()));
             player2Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.5f, 1.1f), Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0),Mat4.rotate(180,0,0,1))));
 
-            // player 1 camera follow
+            // player 2 camera follow
             GameObject player2CameraFollow = currentScene.createGameObject();
             player2CameraFollow.addComponent(FollowBehaviour.class).setTarget(player2.getTransform());
 
-            // player 1 camera wrapper
+            // player 2 camera wrapper
             GameObject player2CameraWrapper = currentScene.createGameObject(player2CameraFollow.getTransform());
             player2CameraWrapper.addComponent(LookAroundBehaviour.class).setButtons(Buttons.P2_LOOK_LEFT, Buttons.P2_LOOK_RIGHT);
 
@@ -283,7 +293,7 @@ public class LightCycle {
             // Skybox
             GameObject skybox = currentScene.createGameObject();
             IMesh[] skyboxMeshes = createSkyboxMeshes(500f);
-            for(IMesh currentMesh : skyboxMeshes) {
+            for (IMesh currentMesh : skyboxMeshes) {
                 renderManager.addMesh(currentMesh);
                 skybox.addComponent(Mesh.class).setMesh(currentMesh);
             }
