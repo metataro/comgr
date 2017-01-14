@@ -28,6 +28,8 @@ public class PlayerBehaviour extends Behaviour {
 
     private boolean alive;
 
+    private String name;
+
     private String leftButton;
     private String rightButton;
     private String speedButton;
@@ -35,11 +37,30 @@ public class PlayerBehaviour extends Behaviour {
     private IMaterial wallMaterial;
     private String material;
 
-    public void setButtons(String left, String right, String speed, String m) {
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setButtons(String left, String right, String speed) {
         this.alive = true;
         this.leftButton = left;
         this.rightButton = right;
         this.speedButton = speed;
+    }
+
+    public void setWallMaterial(String m) {
         this.material = m;
         initWallSegments();
     }
@@ -48,21 +69,13 @@ public class PlayerBehaviour extends Behaviour {
 
     @Override
     public void init() {
-        
+
     }
 
     @Override
     public void update(float deltaTime) {
         if (isAlive())
             this.handleControls(deltaTime);
-    }
-
-    public boolean isAlive() {
-        return alive;
-    }
-
-    public void setAlive(boolean alive) {
-        this.alive = alive;
     }
 
     /**

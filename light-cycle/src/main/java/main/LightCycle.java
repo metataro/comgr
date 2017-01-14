@@ -112,6 +112,14 @@ public class LightCycle {
 
             IRenderManager renderManager = currentScene.getRenderManager();
 
+            // init scene
+            currentScene.addSystem(ProcessType.Update, new BehaviourSystem());
+            currentScene.addSystem(ProcessType.Update, new TransformSystem());
+            currentScene.addSystem(ProcessType.Update, new CollisionSystem());
+            currentScene.addSystem(ProcessType.Update, new AudioSystem());
+            currentScene.addSystem(ProcessType.Update, new GamePlaySystem());
+            currentScene.addSystem(ProcessType.Draw, new RenderSystem(renderManager));
+
             // cameras
             ICamera player1Camera = new Camera();
             ICamera player2Camera = new Camera(Vec3.ZERO, Vec3.Z);
@@ -163,7 +171,9 @@ public class LightCycle {
             GameObject player1 = currentScene.createGameObject();
             player1.getTransform().setLocal(Mat4.translate(0, 0, -50));
             PlayerBehaviour player1Behaviour = player1.addComponent(PlayerBehaviour.class);
-            player1Behaviour.setButtons(Buttons.P1_LEFT, Buttons.P1_RIGHT, Buttons.P1_SPEED, "wall_green");
+            player1Behaviour.setName("Player 1");
+            player1Behaviour.setButtons(Buttons.P1_LEFT, Buttons.P1_RIGHT, Buttons.P1_SPEED);
+            player1Behaviour.setWallMaterial("wall_green");
 
             // player 1 lightCycle1
             GameObject player1Vehicle = currentScene.createGameObject(player1.transform);
@@ -226,7 +236,9 @@ public class LightCycle {
             GameObject player2 = currentScene.createGameObject();
             player2.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, 0, 50), Mat4.rotate(180, 0, 1, 0)));
             PlayerBehaviour player2Behaviour = player2.addComponent(PlayerBehaviour.class);
-            player2Behaviour.setButtons(Buttons.P2_LEFT, Buttons.P2_RIGHT, Buttons.P2_SPEED, "wall_yellow");
+            player2Behaviour.setName("Player 1");
+            player2Behaviour.setButtons(Buttons.P2_LEFT, Buttons.P2_RIGHT, Buttons.P2_SPEED);
+            player2Behaviour.setWallMaterial("wall_yellow");
 
             // player 2 lightCycle1
             GameObject player2Vehicle = currentScene.createGameObject(player2.transform);
@@ -272,17 +284,6 @@ public class LightCycle {
                 renderManager.addMesh(currentMesh);
                 skybox.addComponent(Mesh.class).setMesh(currentMesh);
             }
-
-
-            // init scenes
-            currentScene.addSystem(ProcessType.Update, new BehaviourSystem());
-            currentScene.addSystem(ProcessType.Update, new TransformSystem());
-            currentScene.addSystem(ProcessType.Update, new CollisionSystem());
-            currentScene.addSystem(ProcessType.Update, new AudioSystem());
-
-            currentScene.addSystem(ProcessType.Draw, new RenderSystem(renderManager)); 
-            
-
         });
 
         Thread.sleep(100);

@@ -6,6 +6,7 @@ import ch.fhnw.ether.render.IRenderManager;
 import ch.fhnw.ether.render.forward.ForwardRenderer;
 import component.ComponentManager;
 import component.Transform;
+import event.Event;
 import event.EventManager;
 import gameobject.GameObject;
 import gameobject.GameObjectManager;
@@ -131,7 +132,9 @@ public class Scene {
     public GameObject createGameObject(Transform parentTransform) {
         Transform transform = componentManager.createComponent(Transform.class);
         transform.setParent(parentTransform);
-        return gameObjectManager.createGameObject(this, transform);
+        GameObject gameObject = gameObjectManager.createGameObject(this, transform);
+        eventManager.notify(new Event.GameObjectCreatedEvent(this, gameObject));
+        return gameObject;
     }
     public GameObject createGameObject() {
         return createGameObject(sceneGraph.getRoot());

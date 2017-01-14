@@ -40,6 +40,7 @@ public class GameObject {
         component.setGameObject(this);
         this.components.put(component.typeName(), component);
         component.init();
+        scene.getEventManager().notify(new Event.ComponentCreatedEvent(this, component));
         return component;
     }
 
