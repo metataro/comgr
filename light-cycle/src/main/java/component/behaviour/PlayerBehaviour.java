@@ -37,7 +37,6 @@ public class PlayerBehaviour extends Behaviour {
         this.rightButton = right;
         this.speedButton = speed;
         this.material = m;
-        System.out.println(material);
         initWallSegments();
     }
     
