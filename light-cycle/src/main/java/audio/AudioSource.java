@@ -86,4 +86,8 @@ public class AudioSource {
     public boolean isPlaying() {
         return AL10.alGetSourcei(sourceId, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
     }
+
+    public int getCurrentlyPlayingBufferId() {
+        return AL10.alGetSourcei(sourceId, AL10.AL_BUFFER);
+    }
 }

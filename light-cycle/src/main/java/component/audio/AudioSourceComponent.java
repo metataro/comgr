@@ -72,6 +72,10 @@ public class AudioSourceComponent extends Component{
         }
     }
 
+    public boolean isBufferPlaying(AudioBuffer buffer) {
+        return audioSources[0].getCurrentlyPlayingBufferId() == buffer.getBufferId();
+    }
+
     public boolean isPlaying() {
         return audioSources[0].isPlaying();
     }
