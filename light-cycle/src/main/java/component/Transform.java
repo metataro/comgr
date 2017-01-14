@@ -110,7 +110,7 @@ public class Transform extends Component implements SceneGraphNode<Transform> {
     }
 
     public void translateBackward(float scaleFactor) {
-        this.translate(this.getForward().negate().scale(scaleFactor));
+        this.translate(this.getLocalForward().negate().scale(scaleFactor));
     }
 
     public void rotate(float angle, float x, float y, float z) {
