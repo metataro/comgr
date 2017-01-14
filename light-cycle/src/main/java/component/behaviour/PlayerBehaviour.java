@@ -14,19 +14,17 @@ import component.Transform;
 import component.collider.BoxCollider;
 import gameobject.GameObject;
 import inputdevice.Input;
-import inputdevice.Input.Buttons;
 import main.LightCycle;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 
 public class PlayerBehaviour extends Behaviour {
 
     private final HashSet<String> buttonsCurrentlyPressed = new HashSet<>();
 
-    private final LinkedList<GameObject> wallSegments = new LinkedList<>();
+    private final LinkedList<GameObject> trailSegments = new LinkedList<>();
 
     private boolean alive;
     private float boostTime = 1;
@@ -37,7 +35,7 @@ public class PlayerBehaviour extends Behaviour {
     private String rightButton;
     private String speedButton;
 
-    private IMaterial wallMaterial;
+    private IMaterial trailMaterial;
     private String material;
 
     private GameObject boostPowerObject;
@@ -66,9 +64,9 @@ public class PlayerBehaviour extends Behaviour {
         this.speedButton = speed;
     }
 
-    public void setWallMaterial(String m) {
+    public void setTrailMaterial(String m) {
         this.material = m;
-        initWallSegments();
+        initTrailSegments();
     }
 
     public void addBoostTime(float boostTime) {
@@ -152,68 +150,71 @@ public class PlayerBehaviour extends Behaviour {
 
         if (this.isButtonNewlyPressed(Input.getButton(leftButton), leftButton)) {
             getGameObject().transform.rotateLeft(90);
-            addWallSegment();
+            addTrailSegment();
         }
 
         if (this.isButtonNewlyPressed(Input.getButton(rightButton), rightButton)) {
             getGameObject().transform.rotateRight(90);
-            addWallSegment();
+            addTrailSegment();
         }
 
         getGameObject().transform.translateForward(velocity);
 
-        updateWallSegments();
+        updateTrailSegments();
     }
 
-    private void updateWallSegments() {
-        if (!this.wallSegments.isEmpty()) {
-            Transform wallHeadTransform = this.wallSegments.getFirst().getTransform();
-            float targetScaleZ = getTransform().getLocalPosition().distance(wallHeadTransform.getPosition());
-            float currentScaleZ = (Math.abs(wallHeadTransform.getScale().x - 1) < MathUtilities.EPSILON ? (Math.abs(wallHeadTransform.getScale().y - 1) < MathUtilities.EPSILON ? wallHeadTransform.getScale().z : wallHeadTransform.getScale().y) : wallHeadTransform.getScale().x);
+    private void updateTrailSegments() {
+        if (!this.trailSegments.isEmpty()) {
+            Transform trailHeadTransform = this.trailSegments.getFirst().getTransform();
+            float targetScaleZ = getTransform().getLocalPosition().distance(trailHeadTransform.getPosition());
+            float currentScaleZ = (Math.abs(trailHeadTransform.getScale().x - 1) < MathUtilities.EPSILON ? (Math.abs(trailHeadTransform.getScale().y - 1) < MathUtilities.EPSILON ? trailHeadTransform.getScale().z : trailHeadTransform.getScale().y) : trailHeadTransform.getScale().x);
             float scaleZ = targetScaleZ / currentScaleZ;
             if (scaleZ > 0 ) {
-                wallHeadTransform.scale(new Vec3(1, 1, scaleZ));
+                trailHeadTransform.scale(new Vec3(1, 1, scaleZ));
             }
         }
     }
 
-    private void initWallSegments() {
+    private void initTrailSegments() {
     	IGPUImage t = null;
-    	
         try {
             t = IGPUImage.read(LightCycle.class.getResource("/textures/"+material+".png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        wallMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 1f, t);
-        addWallSegment(getTransform().getLocalPosition(), getTransform().getLocalEulerAngles());
+        trailMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 1f, t);
+        addTrailSegment();
     }
 
-    private void addWallSegment() {
-        //addWallSegment(getTransform().getPosition(), getTransform().getEulerAngles());
-        addWallSegment(getTransform().getLocalPosition(), getTransform().getLocalEulerAngles());
+    private void addTrailSegment() {
+        //addTrailSegment(getTransform().getPosition(), getTransform().getEulerAngles());
+        addTrailSegment(getTransform().getLocalPosition(), getTransform().getLocalEulerAngles());
     }
 
-    private void addWallSegment(Vec3 position, Vec3 eulerAngles) {
-        GameObject wallSegment = getGameObject().getScene().createGameObject();
-        wallSegment.getTransform().setLocal(Mat4.multiply(
+    private void addTrailSegment(Vec3 position, Vec3 eulerAngles) {
+        GameObject trailSegment = getGameObject().getScene().createGameObject();
+        trailSegment.getTransform().setLocal(Mat4.multiply(
                 Mat4.translate(position),
                 Mat4.rotate(eulerAngles.x, 0, 1, 0),
                 Mat4.rotate(eulerAngles.y, 1, 0, 0),
                 Mat4.scale(1, 1, 0.001f)//,
                 //Mat4.rotate(eulerAngles.z, 0, 0, 1)
         ));
-        GameObject wallSegmentInner = getGameObject().getScene().createGameObject(wallSegment.transform);
-        wallSegmentInner.addComponent(Mesh.class).setMesh(createWallMesh());
-        wallSegmentInner.addComponent(BoxCollider.class);
-        wallSegmentInner.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,-0.35f,0.5f),Mat4.scale(0.1f, 0.3f, 1)));
-        wallSegments.addFirst(wallSegment);
+        GameObject trailSegmentInner = getGameObject().getScene().createGameObject(trailSegment.transform);
+        trailSegmentInner.addComponent(Mesh.class).setMesh(createTrailMesh());
+        trailSegmentInner.addComponent(BoxCollider.class);
+        trailSegmentInner.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,-0.35f,0.5f),Mat4.scale(0.1f, 0.3f, 1)));
+        trailSegments.addFirst(trailSegment);
     }
 
-    private IMesh createWallMesh() {
-        IMesh mesh = MeshUtilities.createCube(wallMaterial);
-        getGameObject().getScene().getRenderManager().addMesh(mesh);
-        return mesh;
+    private IMesh createTrailMesh() {
+        return MeshUtilities.createCube(trailMaterial);
+    }
+
+    public void destroyTrail() {
+        trailSegments.forEach(GameObject::destroy);
+        trailSegments.clear();
+        addTrailSegment();
     }
 
     public float getBoostTime() {

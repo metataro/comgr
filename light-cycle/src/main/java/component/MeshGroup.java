@@ -1,5 +1,6 @@
 package component;
 
+import ch.fhnw.ether.render.IRenderManager;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
@@ -10,7 +11,11 @@ public class MeshGroup extends Component {
     private List<IMesh> meshes;
 
     public void setMeshes(List<IMesh> meshes) {
+        if (this.meshes != null)
+            removeMeshes();
         this.meshes = meshes;
+        final IRenderManager renderManager = getGameObject().getScene().getRenderManager();
+        this.meshes.forEach(renderManager::addMesh);
     }
 
     public List<IMesh> getMeshes() {
@@ -23,5 +28,15 @@ public class MeshGroup extends Component {
             bounds.add(mesh.getBounds());
         }
         return bounds;
+    }
+
+    private void removeMeshes() {
+        final IRenderManager renderManager = getGameObject().getScene().getRenderManager();
+        this.meshes.forEach(renderManager::removeMesh);
+    }
+
+    @Override
+    public void destroy() {
+        removeMeshes();
     }
 }
