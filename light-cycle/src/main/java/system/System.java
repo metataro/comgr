@@ -19,5 +19,5 @@ public abstract class System extends EventListener {
 
     protected void processSystem(float deltaTime) {}
 
-    protected abstract void processEvent(Event event);
+    protected void processEvent(Event event) {}
 }

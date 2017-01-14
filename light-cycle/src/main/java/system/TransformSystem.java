@@ -9,8 +9,4 @@ public class TransformSystem extends System {
         scene.getSceneGraph().update();
     }
 
-    @Override
-    protected void processEvent(Event event) {
-
-    }
 }

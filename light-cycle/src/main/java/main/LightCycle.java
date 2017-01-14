@@ -173,19 +173,21 @@ public class LightCycle {
             powerup.getTransform().setLocal(Mat4.translate(0, 0, 0));
             powerup.addComponent(Mesh.class).setMesh(sphere);
             powerup.addComponent(PowerUpBehaviour.class);
-            powerup.addComponent(BoxCollider.class);//.setBoundingBox(sphere.getBounds());
+            powerup.addComponent(BoxCollider.class).setTrigger(true);//.setBoundingBox(sphere.getBounds());
 
             // player 1
             GameObject player1 = currentScene.createGameObject();
             player1.getTransform().setLocal(Mat4.translate(0, 0, -50));
-            player1.addComponent(PlayerBehaviour.class).setButtons(Buttons.P1_LEFT, Buttons.P1_RIGHT, Buttons.P1_SPEED, "wall_green");
+            PlayerBehaviour player1Behaviour = player1.addComponent(PlayerBehaviour.class);
+            player1Behaviour.setButtons(Buttons.P1_LEFT, Buttons.P1_RIGHT, Buttons.P1_SPEED, "wall_green");
 
             // player 1 lightCycle1
             GameObject player1Vehicle = currentScene.createGameObject(player1.transform);
             
             MeshGroup player1VehicleMeshGroup = player1Vehicle.addComponent(MeshGroup.class);
             player1VehicleMeshGroup.setMeshes(lightCycle1);
-            player1Vehicle.addComponent(LightCycleBehaviour.class);
+            LightCycleBehaviour player1VehicleBehaviour = player1Vehicle.addComponent(LightCycleBehaviour.class);
+            player1VehicleBehaviour.setPlayerBehaviour(player1Behaviour);
             player1Vehicle.addComponent(BoxCollider.class);//.setBoundingBox(player1VehicleMeshGroup.getBounds());
             float maxExtent = Math.max(player1VehicleMeshGroup.getBounds().getExtentX(), Math.max(player1VehicleMeshGroup.getBounds().getExtentY(), player1VehicleMeshGroup.getBounds().getExtentZ()));
             player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.5f, 1.1f), Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0), Mat4.rotate(180,0,0,1)));
@@ -209,13 +211,15 @@ public class LightCycle {
             // player 2
             GameObject player2 = currentScene.createGameObject();
             player2.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, 0, 50), Mat4.rotate(180, 0, 1, 0)));
-            player2.addComponent(PlayerBehaviour.class).setButtons(Buttons.P2_LEFT, Buttons.P2_RIGHT, Buttons.P2_SPEED, "wall_yellow");
+            PlayerBehaviour player2Behaviour = player2.addComponent(PlayerBehaviour.class);
+            player2Behaviour.setButtons(Buttons.P2_LEFT, Buttons.P2_RIGHT, Buttons.P2_SPEED, "wall_yellow");
 
             // player 2 lightCycle1
             GameObject player2Vehicle = currentScene.createGameObject(player2.transform);
             MeshGroup player2VehicleMeshGroup = player2Vehicle.addComponent(MeshGroup.class);
             player2VehicleMeshGroup.setMeshes(lightCycle2);
-            player2Vehicle.addComponent(LightCycleBehaviour.class);
+            LightCycleBehaviour player2VehicleBehaviour = player2Vehicle.addComponent(LightCycleBehaviour.class);
+            player2VehicleBehaviour.setPlayerBehaviour(player2Behaviour);
             player2Vehicle.addComponent(BoxCollider.class);//.setBoundingBox(player2VehicleMeshGroup.getBounds());
             maxExtent = Math.max(player2VehicleMeshGroup.getBounds().getExtentX(), Math.max(player2VehicleMeshGroup.getBounds().getExtentY(), player2VehicleMeshGroup.getBounds().getExtentZ()));
             player2Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.5f, 1.1f), Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0),Mat4.rotate(180,0,0,1))));
@@ -249,7 +253,7 @@ public class LightCycle {
 
             // Skybox
             GameObject skybox = currentScene.createGameObject();
-            IMesh[] skyboxMeshes = createSkyboxMeshes(20000f);
+            IMesh[] skyboxMeshes = createSkyboxMeshes(10000f);
             for(IMesh currentMesh : skyboxMeshes) {
                 renderManager.addMesh(currentMesh);
                 skybox.addComponent(Mesh.class).setMesh(currentMesh);

@@ -15,6 +15,12 @@ public class LightCycleBehaviour extends Behaviour {
 
     private AudioBuffer tronEngine;
     private AudioBuffer explosion;
+    private boolean collided = false;
+    private PlayerBehaviour playerBehaviour;
+
+    public void setPlayerBehaviour(PlayerBehaviour playerBehaviour) {
+        this.playerBehaviour = playerBehaviour;
+    }
 
     @Override
     public void init() {
@@ -30,9 +36,14 @@ public class LightCycleBehaviour extends Behaviour {
     @Override
     public void onCollision(GameObject other) {
         Optional<AudioSourceComponent> audio = getGameObject().getComponent(AudioSourceComponent.class);
-        if (audio.isPresent() && !other.getComponent(Behaviour.class).toString().contains("PowerUpBehaviour")) {
+        if (audio.isPresent() && !collided) {
             audio.get().setLooping(false);
             audio.get().play(explosion);
+            collided = true;
+            if (playerBehaviour != null) {
+                playerBehaviour.setAlive(false);
+            }
+            //getTransform().getParent().getGameObject().getComponent(Behaviour.class).ifPresent(b -> b.onCollision(other));
         }
     }
 

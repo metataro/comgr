@@ -33,11 +33,6 @@ public class CollisionSystem extends System {
         }
     }
 
-    @Override
-    protected void processEvent(Event event) {
-
-    }
-
     private void checkIntersection(BoxCollider c1, BoxCollider c2) {
         if (c1.getBoundingBox().intersects(c2.getBoundingBox())) {
             scene.getEventManager().notify(new Event.CollisionEvent(this, c1, c2));

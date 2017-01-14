@@ -15,9 +15,4 @@ public class RenderSystem extends System {
     public void processSystem(float deltaTime) {
         this.renderManager.update();
     }
-
-    @Override
-    protected void processEvent(Event event) {
-
-    }
 }

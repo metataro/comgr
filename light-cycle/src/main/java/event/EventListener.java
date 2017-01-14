@@ -16,7 +16,9 @@ public abstract class EventListener {
 	}
 
 	protected void processNext(Consumer<Event> consumer) {
-		consumer.accept(pending.removeFirst());
+		if (!pending.isEmpty()) {
+			consumer.accept(pending.removeFirst());
+		}
 	}
 
 	protected void processAllPending(Consumer<Event> consumer) {

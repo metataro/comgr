@@ -15,6 +15,7 @@ public class Transform extends Component implements SceneGraphNode<Transform> {
     private boolean dirty;
     private Mat4 local;
     private Mat4 world;
+
     private Transform parent;
     private ArrayList<Transform> children = new ArrayList<>();
 
@@ -129,6 +130,10 @@ public class Transform extends Component implements SceneGraphNode<Transform> {
     public void scale(final Vec3 scale) {
         this.local = Mat4.multiply(local, Mat4.scale(scale));
         this.dirty = true;
+    }
+
+    public Optional<Transform> getParent() {
+        return parent == null ? Optional.empty() : Optional.of(parent);
     }
 
     @Override

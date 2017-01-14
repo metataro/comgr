@@ -26,13 +26,17 @@ public class PlayerBehaviour extends Behaviour {
 
     private final HashSet<String> buttonsCurrentlyPressed = new HashSet<>();
 
+    private boolean alive;
+
     private String leftButton;
     private String rightButton;
     private String speedButton;
+
     private IMaterial wallMaterial;
     private String material;
 
     public void setButtons(String left, String right, String speed, String m) {
+        this.alive = true;
         this.leftButton = left;
         this.rightButton = right;
         this.speedButton = speed;
@@ -40,7 +44,6 @@ public class PlayerBehaviour extends Behaviour {
         System.out.println(material);
         initWallSegments();
     }
-    
 
     private final LinkedList<GameObject> wallSegments = new LinkedList<>();
 
@@ -51,7 +54,16 @@ public class PlayerBehaviour extends Behaviour {
 
     @Override
     public void update(float deltaTime) {
-        this.handleControls(deltaTime);
+        if (isAlive())
+            this.handleControls(deltaTime);
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 
     /**
@@ -99,7 +111,6 @@ public class PlayerBehaviour extends Behaviour {
      * @param velocity Current velocity.
      */
     private void handleSteering(final float velocity) {
-
         getGameObject().transform.translateForward(velocity);
 
         //if (Input.getButton(Buttons.BACKWARD)) {

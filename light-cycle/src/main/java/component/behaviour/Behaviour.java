@@ -12,6 +12,9 @@ public abstract class Behaviour extends Component {
     public void onCollision(GameObject other) {
     }
 
+    public void onTrigger(GameObject other) {
+    }
+
     @Override
     public final String typeName() {
         return Behaviour.class.getSimpleName();
