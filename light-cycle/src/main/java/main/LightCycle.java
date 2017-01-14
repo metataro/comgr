@@ -51,6 +51,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
@@ -137,16 +138,6 @@ public class LightCycle {
             IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 0.8f, t);
             IMesh groundMesh = createGroundPlane(textureMaterial, 1000);
 
-            final URL objSphere = getClass().getResource("/sphere.obj");
-            final List<IMesh> meshesSphere = new ArrayList<>();
-            try {
-                new ObjReader(objSphere).getMeshes().forEach(meshesSphere::add);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            final List<IMesh> mergedSphere = MeshUtilities.mergeMeshes(meshesSphere);
-            IMesh sphere = mergedSphere.get(0);
-
             final URL obj = getClass().getResource("/lightcycle/HQ_Moviecycle.obj");
             final List<IMesh> meshes = new ArrayList<>();
             try {
@@ -160,20 +151,13 @@ public class LightCycle {
             renderManager.addMesh(groundMesh);
             lightCycle1.forEach(renderManager::addMesh);
             lightCycle2.forEach(renderManager::addMesh);
-            renderManager.addMesh(sphere);
+            
 
             //Ground
             GameObject ground = currentScene.createGameObject();
             ground.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,-1,0), Mat4.rotate(-90,1,0,0)));
             Mesh groundMeshComp = ground.addComponent(Mesh.class);
             groundMeshComp.setMesh(groundMesh);
-
-            //powerUp
-            GameObject powerup = currentScene.createGameObject();
-            powerup.getTransform().setLocal(Mat4.translate(0, 0, 0));
-            powerup.addComponent(Mesh.class).setMesh(sphere);
-            powerup.addComponent(PowerUpBehaviour.class);
-            powerup.addComponent(BoxCollider.class).setTrigger(true);//.setBoundingBox(sphere.getBounds());
 
             // player 1
             GameObject player1 = currentScene.createGameObject();
@@ -192,6 +176,36 @@ public class LightCycle {
             float maxExtent = Math.max(player1VehicleMeshGroup.getBounds().getExtentX(), Math.max(player1VehicleMeshGroup.getBounds().getExtentY(), player1VehicleMeshGroup.getBounds().getExtentZ()));
             player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.5f, 1.1f), Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0), Mat4.rotate(180,0,0,1)));
 
+            //create powerUp mesh
+            final URL objSphere = getClass().getResource("/sphere.obj");
+            final List<IMesh> meshesSphere = new ArrayList<>();
+            try {
+                new ObjReader(objSphere).getMeshes().forEach(meshesSphere::add);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            final List<IMesh> mergedSphere = MeshUtilities.mergeMeshes(meshesSphere);
+            IMesh sphere = mergedSphere.get(0);
+            
+            int nPower = 5;
+            GameObject[] powerup = new GameObject[nPower];
+            IMesh[] spheres = new IMesh[nPower];
+            //add nPower powerups
+            for(int i =0; i<nPower; i++){ 
+            	spheres[i] = sphere.createInstance();
+            	renderManager.addMesh(spheres[i]);
+	            powerup[i] = currentScene.createGameObject();
+	            Random r = new Random(); 
+	            int rx = r.nextInt(2000)-1000;
+	            int ry = r.nextInt(2000)-1000;
+	            java.lang.System.out.println(rx + " " + ry);
+	            
+	            powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
+	            powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
+	            powerup[i].addComponent(PowerUpBehaviour.class);
+	            powerup[i].addComponent(BoxCollider.class).setTrigger(true);
+            }
+            
             // player 1 camera follow
             GameObject player1CameraFollow = currentScene.createGameObject();
             player1CameraFollow.addComponent(FollowBehaviour.class).setTarget(player1.getTransform());
@@ -243,7 +257,7 @@ public class LightCycle {
             // attach listeners to game objects
             player1CameraObject.addComponent(AudioListenerComoponent.class).setAudioListener(currentScene.getAudioController().getAudioListener(0));
             player2CameraObject.addComponent(AudioListenerComoponent.class).setAudioListener(currentScene.getAudioController().getAudioListener(1));
-
+            
             // scene background audio
             GameObject hambbe = currentScene.createGameObject();
             AudioSourceComponent hambbeAudioSourceComponent = hambbe.addComponent(AudioSourceComponent.class);
@@ -259,13 +273,16 @@ public class LightCycle {
                 skybox.addComponent(Mesh.class).setMesh(currentMesh);
             }
 
+
             // init scenes
             currentScene.addSystem(ProcessType.Update, new BehaviourSystem());
             currentScene.addSystem(ProcessType.Update, new TransformSystem());
             currentScene.addSystem(ProcessType.Update, new CollisionSystem());
             currentScene.addSystem(ProcessType.Update, new AudioSystem());
 
-            currentScene.addSystem(ProcessType.Draw, new RenderSystem(renderManager));
+            currentScene.addSystem(ProcessType.Draw, new RenderSystem(renderManager)); 
+            
+
         });
 
         Thread.sleep(100);
