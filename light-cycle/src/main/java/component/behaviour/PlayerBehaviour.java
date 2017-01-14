@@ -29,7 +29,7 @@ public class PlayerBehaviour extends Behaviour {
     private final LinkedList<GameObject> wallSegments = new LinkedList<>();
 
     private boolean alive;
-    private float boostTime = 0;
+    private float boostTime = 1;
 
     private String name;
 
@@ -39,6 +39,9 @@ public class PlayerBehaviour extends Behaviour {
 
     private IMaterial wallMaterial;
     private String material;
+
+    private GameObject boostPowerObject;
+    private IMesh deletedBoostMesh = null;
 
     public boolean isAlive() {
         return alive;
@@ -79,8 +82,21 @@ public class PlayerBehaviour extends Behaviour {
 
     @Override
     public void update(float deltaTime) {
-        if (isAlive())
+        if (isAlive()) {
             this.handleControls(deltaTime);
+            checkBoostPowerObject();
+        }
+    }
+
+    private void checkBoostPowerObject() {
+        // HACKY HACK!
+        if (boostTime == 0 && deletedBoostMesh == null) {
+            this.deletedBoostMesh = this.boostPowerObject.getComponent(Mesh.class).get().getMesh();
+            this.boostPowerObject.getScene().getRenderManager().removeMesh(deletedBoostMesh);
+        } else if (boostTime > 0 && deletedBoostMesh != null) {
+            this.boostPowerObject.getScene().getRenderManager().addMesh(deletedBoostMesh);
+            this.deletedBoostMesh = null;
+        }
     }
 
     /**
@@ -198,5 +214,13 @@ public class PlayerBehaviour extends Behaviour {
         IMesh mesh = MeshUtilities.createCube(wallMaterial);
         getGameObject().getScene().getRenderManager().addMesh(mesh);
         return mesh;
+    }
+
+    public float getBoostTime() {
+        return boostTime;
+    }
+
+    public void setBoostPowerObject(GameObject boostPowerObject) {
+        this.boostPowerObject = boostPowerObject;
     }
 }
