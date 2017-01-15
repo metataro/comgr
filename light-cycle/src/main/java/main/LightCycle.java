@@ -310,6 +310,7 @@ public class LightCycle {
             AudioSourceComponent hambbeAudioSourceComponent = hambbe.addComponent(AudioSourceComponent.class);
             hambbeAudioSourceComponent.setAudioSource(currentScene.getAudioController().createAudioSources());
             hambbeAudioSourceComponent.setLooping(true);
+            hambbeAudioSourceComponent.play(AudioMaster.createAudioBufferFromWAV(LightCycle.class.getResource("/daft_punk-the_game_has_changed.wav")));
 
             // Skybox
             GameObject skybox = currentScene.createGameObject();
