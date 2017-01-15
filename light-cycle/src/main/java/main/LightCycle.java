@@ -7,7 +7,6 @@ import ch.fhnw.ether.formats.obj.ObjReader;
 import ch.fhnw.ether.image.IGPUImage;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.platform.Platform;
-import ch.fhnw.ether.render.IRenderManager;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.DirectionalLight;
@@ -21,6 +20,7 @@ import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 import ch.fhnw.ether.view.IView;
@@ -30,6 +30,7 @@ import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec2;
 import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.geometry.GeodesicSphere;
 import component.Light;
 import component.Mesh;
 import component.MeshGroup;
@@ -53,7 +54,6 @@ import scene.Scene;
 import system.*;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -146,7 +146,7 @@ public class LightCycle {
             ILight light3 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
             currentScene.getRenderManager().addLight(mainLight1);
             currentScene.getRenderManager().addLight(mainLight2);
-            
+
             // meshes
             IGPUImage t = null;
             try {
@@ -207,7 +207,7 @@ public class LightCycle {
 
             // player 1 lightCycle1
             GameObject player1Vehicle = currentScene.createGameObject(player1.transform);
-            
+
             MeshGroup player1VehicleMeshGroup = player1Vehicle.addComponent(MeshGroup.class);
             player1VehicleMeshGroup.setMeshes(lightCycle1);
             LightCycleBehaviour player1VehicleBehaviour = player1Vehicle.addComponent(LightCycleBehaviour.class);
@@ -222,7 +222,7 @@ public class LightCycle {
             IMesh[] spheres = new IMesh[nPower];
             //add nPower powerups
             for(int i = 0; i < nPower/3; i++) {
-            
+
                 spheres[i] = sphere.createInstance();
                 powerup[i] = currentScene.createGameObject();
                 Random r = new Random();
@@ -231,7 +231,7 @@ public class LightCycle {
 
                 powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
                 powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
-                powerup[i].addComponent(PowerUpBehaviour.class);
+                powerup[i].addComponent(PowerUpBehaviour.class).setSound(AudioMaster.createAudioBufferFromWAV(LightCycle.class.getResource("/beam.wav")));
                 powerup[i].addComponent(SpeedPowerUp.class).setBoostTime(4);
                 powerup[i].addComponent(BoxCollider.class).setTrigger(true);
             }
@@ -244,7 +244,7 @@ public class LightCycle {
 
                 powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
                 powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
-                powerup[i].addComponent(PowerUpBehaviour.class);
+                powerup[i].addComponent(PowerUpBehaviour.class).setSound(AudioMaster.createAudioBufferFromWAV(LightCycle.class.getResource("/fanfare.wav")));
                 powerup[i].addComponent(DestroyTrailPowerUp.class);
                 powerup[i].addComponent(BoxCollider.class).setTrigger(true);
             }
@@ -257,11 +257,11 @@ public class LightCycle {
 
                 powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
                 powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
-                powerup[i].addComponent(PowerUpBehaviour.class);
+                powerup[i].addComponent(PowerUpBehaviour.class).setSound(AudioMaster.createAudioBufferFromWAV(LightCycle.class.getResource("/fanfare.wav")));
                 powerup[i].addComponent(DestroyOtherTrailPowerUp.class);
                 powerup[i].addComponent(BoxCollider.class).setTrigger(true);
             }
-            
+
             // player 1 camera follow
             GameObject player1CameraFollow = currentScene.createGameObject();
             player1CameraFollow.addComponent(FollowBehaviour.class).setTarget(player1.getTransform());
@@ -321,7 +321,7 @@ public class LightCycle {
             // attach listeners to game objects
             player1CameraObject.addComponent(AudioListenerComoponent.class).setAudioListener(currentScene.getAudioController().getAudioListener(0));
             player2CameraObject.addComponent(AudioListenerComoponent.class).setAudioListener(currentScene.getAudioController().getAudioListener(1));
-            
+
             // scene background audio
             GameObject hambbe = currentScene.createGameObject();
             AudioSourceComponent hambbeAudioSourceComponent = hambbe.addComponent(AudioSourceComponent.class);

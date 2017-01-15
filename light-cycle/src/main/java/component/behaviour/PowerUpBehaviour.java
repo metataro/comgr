@@ -15,19 +15,26 @@ import java.util.Random;
 
 public class PowerUpBehaviour extends Behaviour {
 
-    private AudioBuffer powerupsound;
+    private AudioBuffer sound;
 
     private float minY = 0.15f;
     private float maxY = 0.45f;
 	private float bumpSpeed = 2f;
 	private float modifier = 0;
 
-    @Override
+	public AudioBuffer getSound() {
+		return sound;
+	}
+
+	public void setSound(AudioBuffer sound) {
+		this.sound = sound;
+	}
+
+	@Override
     public void init() {
-        powerupsound = AudioMaster.createAudioBufferFromWAV(LightCycle.class.getResource("/fanfare.wav"));
+        //powerupsound = AudioMaster.createAudioBufferFromWAV(LightCycle.class.getResource("/fanfare.wav"));
         AudioSourceComponent audio = getGameObject().addComponent(AudioSourceComponent.class);
         audio.setAudioSource(getGameObject().getScene().getAudioController().createAudioSources());
-        
     }
 
 	@Override
@@ -50,7 +57,7 @@ public class PowerUpBehaviour extends Behaviour {
 	        	AudioSourceComponent audioloc = new AudioSourceComponent();
 	        	audioloc.setAudioSource(getGameObject().getScene().getAudioController().createAudioSources());
 	        	audioloc.setPosition(t.getLocalPosition());
-	        	audioloc.play(powerupsound);
+	        	audioloc.play(sound);
 	        }
 	        movePowerUp(getGameObject());
     }
@@ -61,5 +68,4 @@ public class PowerUpBehaviour extends Behaviour {
 		int ry = r.nextInt(2000)-1000;
 		go.getTransform().setLocal(Mat4.translate(rx, 0, ry));
 	}
-
 }
