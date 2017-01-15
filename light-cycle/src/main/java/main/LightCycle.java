@@ -20,7 +20,6 @@ import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 import ch.fhnw.ether.view.IView;
@@ -30,6 +29,7 @@ import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec2;
 import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.Vec4;
 import ch.fhnw.util.math.geometry.GeodesicSphere;
 import component.Light;
 import component.Mesh;
@@ -47,6 +47,7 @@ import inputdevice.*;
 import inputdevice.Input.Buttons;
 import org.lwjgl.glfw.GLFW;
 import render.View;
+import render.mesh.material.DistanceMaterial;
 import render.mesh.material.PanelMaterial;
 import render.mesh.material.SkyboxMaterial;
 import scene.ProcessType;
@@ -54,8 +55,10 @@ import scene.Scene;
 import system.*;
 
 import java.io.IOException;
+import java.lang.System;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class LightCycle {
@@ -164,9 +167,6 @@ public class LightCycle {
 
             //Ground
             GameObject ground = createGround(currentScene);
-
-            // Playing area bounding walls
-            GameObject boundingWalls = createBoundingWalls(currentScene);
 
             // player 1
             GameObject player1 = currentScene.createGameObject();
@@ -311,6 +311,10 @@ public class LightCycle {
             GameObject skybox = currentScene.createGameObject();
             skybox.addComponent(MeshGroup.class).setMeshes(createSkyboxMeshes(500f));
 
+            // Playing area bounding walls
+            // TODO: Add mirrored players
+            GameObject boundingWalls = createBoundingWalls(currentScene, player1, player2);
+
             int nPower = 21;
             GameObject[] powerup = new GameObject[nPower];
             IMesh[] spheres = new IMesh[nPower];
@@ -380,7 +384,7 @@ public class LightCycle {
         return boxObstacle;
     }
 
-    private GameObject createBoundingWalls(Scene currentScene) {
+    private GameObject createBoundingWalls(Scene currentScene, GameObject... objects) {
         GameObject result = currentScene.createGameObject();
 
         IGPUImage wallTexture = null;
@@ -390,7 +394,14 @@ public class LightCycle {
             e.printStackTrace();
         }
 
-        IMaterial material = new ColorMapMaterial(wallTexture);
+        Supplier<Vec4>[] suppliers = new Supplier[objects.length];
+        for(int i = 0; i < objects.length; i++) {
+            final int index = i;
+            suppliers[i] = () -> new Vec4(objects[index].getTransform().getPosition());
+        }
+        IMaterial material = new DistanceMaterial(
+                wallTexture,
+                suppliers);
 
         final float middleY = -0.5f;
         final int sideCount = 50;
@@ -408,6 +419,8 @@ public class LightCycle {
         meshGroup.setMeshes(rawMeshes);
         meshGroup.getTransform().scale(new Vec3(playAreaExtends, 16, playAreaExtends));
         meshGroup.getTransform().translate(0, -(layers * 16 / 2f) + middleY, 0);
+
+        result.addComponent(AlwaysUpdateMaterialBehaviour.class);
 
         return result;
     }
