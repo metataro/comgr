@@ -1,13 +1,20 @@
 package component.behaviour;
 
 import ch.fhnw.ether.image.IGPUImage;
+import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.MeshUtilities;
+import ch.fhnw.ether.scene.mesh.IMesh.Primitive;
+import ch.fhnw.ether.scene.mesh.IMesh.Queue;
+import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 import ch.fhnw.util.color.RGB;
+import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.MathUtilities;
+import ch.fhnw.util.math.Vec2;
 import ch.fhnw.util.math.Vec3;
 import component.Mesh;
 import component.Transform;
@@ -15,8 +22,10 @@ import component.collider.BoxCollider;
 import gameobject.GameObject;
 import inputdevice.Input;
 import main.LightCycle;
+import render.mesh.material.PanelMaterial;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -224,4 +233,20 @@ public class PlayerBehaviour extends Behaviour {
     public void setBoostPowerObject(GameObject boostPowerObject) {
         this.boostPowerObject = boostPowerObject;
     }
+    
+    public void onDraw(){
+    	System.out.println("works");
+    	IGPUImage t = null;
+        try {
+            t = IGPUImage.read(LightCycle.class.getResource("/textures/draw.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    	IMesh raw = LightCycle.createPanel(new Vec2(100,200), new Vec2(600,400),t, RGBA.BLACK  );
+    	GameObject g = getGameObject().getScene().createGameObject(); 
+    	g.getTransform().setLocal(Mat4.translate(0,-0.5f,0));
+    	g.addComponent(Mesh.class).setMesh(raw);
+    	
+    }
+    
 }

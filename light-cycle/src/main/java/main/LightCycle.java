@@ -170,6 +170,7 @@ public class LightCycle {
             final IMesh boostPower2 = boostPower1.createInstance();
             final List<IMesh> fakeCameraMesh = loadMeshList("/camera.obj");
 
+
             //Ground
             GameObject ground = currentScene.createGameObject();
             ground.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,-0.5f,0), Mat4.rotate(-90,1,0,0)));
@@ -178,7 +179,8 @@ public class LightCycle {
 
             // player 1
             GameObject player1 = currentScene.createGameObject();
-            player1.getTransform().setLocal(Mat4.translate(0.4f, 0, -50));
+            //player1.getTransform().setLocal(Mat4.translate(0.4f, 0, -50));
+            player1.getTransform().setLocal(Mat4.translate(0, 0, -50));
             PlayerBehaviour player1Behaviour = player1.addComponent(PlayerBehaviour.class);
             player1Behaviour.setName("Player 1");
             player1Behaviour.setButtons(Buttons.P1_LEFT, Buttons.P1_RIGHT, Buttons.P1_SPEED);
@@ -384,7 +386,7 @@ public class LightCycle {
         return result;
     }
 
-    private static IMesh createPanel(Vec2 position, Vec2 size, IGPUImage texture, RGBA color) {
+    public static IMesh createPanel(Vec2 position, Vec2 size, IGPUImage texture, RGBA color) {
         float x0 = position.x;
         float y0 = position.y;
         float x1 = x0 + size.x;
