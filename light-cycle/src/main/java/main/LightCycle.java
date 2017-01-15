@@ -38,6 +38,7 @@ import component.audio.AudioSourceComponent;
 import component.behaviour.*;
 import component.behaviour.ai.FilmingAI;
 import component.collider.BoxCollider;
+import component.powerup.DestroyOtherTrailPowerUp;
 import component.powerup.DestroyTrailPowerUp;
 import component.powerup.SpeedPowerUp;
 import gameobject.GameObject;
@@ -216,11 +217,12 @@ public class LightCycle {
             float yOffset = -0.53f;
             player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, yOffset, 1.1f), Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0), Mat4.rotate(180,0,0,1)));
 
-            int nPower = 20;
+            int nPower = 21;
             GameObject[] powerup = new GameObject[nPower];
             IMesh[] spheres = new IMesh[nPower];
             //add nPower powerups
-            for(int i = 0; i < nPower; i++) {
+            for(int i = 0; i < nPower/3; i++) {
+            
                 spheres[i] = sphere.createInstance();
                 powerup[i] = currentScene.createGameObject();
                 Random r = new Random();
@@ -233,7 +235,7 @@ public class LightCycle {
                 powerup[i].addComponent(SpeedPowerUp.class).setBoostTime(4);
                 powerup[i].addComponent(BoxCollider.class).setTrigger(true);
             }
-            for(int i = nPower / 2; i < nPower; i++) {
+            for(int i = nPower / 3; i < 2*(nPower/3); i++) {
                 spheres[i] = sphere.createInstance();
                 powerup[i] = currentScene.createGameObject();
                 Random r = new Random();
@@ -244,6 +246,19 @@ public class LightCycle {
                 powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
                 powerup[i].addComponent(PowerUpBehaviour.class);
                 powerup[i].addComponent(DestroyTrailPowerUp.class);
+                powerup[i].addComponent(BoxCollider.class).setTrigger(true);
+            }
+            for(int i = 2*(nPower/3); i < nPower; i++) {
+                spheres[i] = sphere.createInstance();
+                powerup[i] = currentScene.createGameObject();
+                Random r = new Random();
+                int rx = r.nextInt(2 * groundsize) - groundsize;
+                int ry = r.nextInt(2 * groundsize) - groundsize;
+
+                powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
+                powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
+                powerup[i].addComponent(PowerUpBehaviour.class);
+                powerup[i].addComponent(DestroyOtherTrailPowerUp.class);
                 powerup[i].addComponent(BoxCollider.class).setTrigger(true);
             }
             
