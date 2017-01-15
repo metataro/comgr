@@ -146,8 +146,8 @@ public class LightCycle {
             ILight mainLight2 = new DirectionalLight(new Vec3(-0.2, -1, 0.2), RGB.WHITE, RGB.WHITE);
             //ILight light1 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
             //ILight light2 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
-            ILight light3 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
-            ILight light4 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
+            ILight light3 = new SpotLight(Vec3.ZERO, RGB.LIGHT_GRAY, RGB.LIGHT_GRAY, Vec3.Z, 30, 1f);
+            ILight light4 = new SpotLight(Vec3.ZERO, RGB.LIGHT_GRAY, RGB.LIGHT_GRAY, Vec3.Z, 30, 1f);
             currentScene.getRenderManager().addLight(mainLight1);
             currentScene.getRenderManager().addLight(mainLight2);
 
