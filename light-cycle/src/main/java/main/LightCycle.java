@@ -39,6 +39,7 @@ import component.audio.AudioSourceComponent;
 import component.behaviour.*;
 import component.behaviour.ai.FilmingAI;
 import component.collider.BoxCollider;
+import component.particle.ParticleSystem;
 import component.powerup.DestroyOtherTrailPowerUp;
 import component.powerup.DestroyTrailPowerUp;
 import component.powerup.SpeedPowerUp;
@@ -135,6 +136,7 @@ public class LightCycle {
             currentScene.addSystem(ProcessType.Update, new CollisionSystem());
             currentScene.addSystem(ProcessType.Update, new AudioSystem());
             currentScene.addSystem(ProcessType.Update, new GamePlaySystem());
+            currentScene.addSystem(ProcessType.Update, new ParticleUpdateSystem());
             currentScene.addSystem(ProcessType.Draw, new RenderSystem());
 
             // cameras
@@ -207,6 +209,7 @@ public class LightCycle {
 
             // player 1 lightCycle1
             GameObject player1Vehicle = currentScene.createGameObject(player1.transform);
+            player1Vehicle.addComponent(ParticleSystem.class);
 
             MeshGroup player1VehicleMeshGroup = player1Vehicle.addComponent(MeshGroup.class);
             player1VehicleMeshGroup.setMeshes(lightCycle1);
@@ -256,6 +259,7 @@ public class LightCycle {
 
             // player 2 lightCycle1
             GameObject player2Vehicle = currentScene.createGameObject(player2.transform);
+            player2Vehicle.addComponent(ParticleSystem.class);
             MeshGroup player2VehicleMeshGroup = player2Vehicle.addComponent(MeshGroup.class);
             player2VehicleMeshGroup.setMeshes(lightCycle2);
             LightCycleBehaviour player2VehicleBehaviour = player2Vehicle.addComponent(LightCycleBehaviour.class);
@@ -306,6 +310,7 @@ public class LightCycle {
             AudioSourceComponent hambbeAudioSourceComponent = hambbe.addComponent(AudioSourceComponent.class);
             hambbeAudioSourceComponent.setAudioSource(currentScene.getAudioController().createAudioSources());
             hambbeAudioSourceComponent.setLooping(true);
+            hambbeAudioSourceComponent.play(AudioMaster.createAudioBufferFromWAV(LightCycle.class.getResource("/daft_punk-the_game_has_changed.wav")));
 
             // Skybox
             GameObject skybox = currentScene.createGameObject();
@@ -359,6 +364,7 @@ public class LightCycle {
                 powerup[i].addComponent(DestroyOtherTrailPowerUp.class);
                 powerup[i].addComponent(BoxCollider.class).setTrigger(true);
             }
+
             // Obstacle
             GameObject boxObstacle1 = createBoxObstacle(currentScene);
             boxObstacle1.getTransform().setLocal(Mat4.multiply(Mat4.translate(-30, 0, 0), Mat4.scale(new Vec3(5, 5, 40))));

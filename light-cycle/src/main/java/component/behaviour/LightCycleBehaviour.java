@@ -2,8 +2,11 @@ package component.behaviour;
 
 import audio.AudioBuffer;
 import audio.AudioMaster;
+import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Mat4;
+import component.MeshGroup;
 import component.audio.AudioSourceComponent;
+import component.particle.ParticleSystem;
 import component.powerup.PowerUp;
 import event.Event;
 import gameobject.GameObject;
@@ -59,7 +62,8 @@ public class LightCycleBehaviour extends Behaviour {
             if (playerBehaviour != null) {
                 playerBehaviour.setAlive(false);
             }
-            //getTransform().getParent().getGameObject().getComponent(Behaviour.class).ifPresent(b -> b.onCollision(other));
+            getGameObject().removeComponent(MeshGroup.class);
+            getGameObject().getComponent(ParticleSystem.class).ifPresent(p -> p.emmitParticles(RGBA.BLACK, 0.1f, 0.5f,100));
         }
     }
 
