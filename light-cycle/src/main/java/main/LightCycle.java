@@ -191,7 +191,7 @@ public class LightCycle {
 
             // player 1 end camera position
             GameObject player1EndCameraPosition = currentScene.createGameObject(player1FakeCamera.getTransform());
-            player1EndCameraPosition.getTransform().setLocal(Mat4.translate(0, 0, 2));
+            player1EndCameraPosition.getTransform().setLocal(Mat4.translate(0, 0, 5f));
 
             // player 1 Boostpower
             GameObject player1Boostpower = currentScene.createGameObject(player1.getTransform());
@@ -283,7 +283,7 @@ public class LightCycle {
 
             // player 2 end camera position
             GameObject player2EndCameraPosition = currentScene.createGameObject(player2FakeCamera.getTransform());
-            player1EndCameraPosition.getTransform().setLocal(Mat4.translate(0, 0, 2));
+            player2EndCameraPosition.getTransform().setLocal(Mat4.translate(0, 0, 5f));
 
             player2Behaviour.setCameraEndPosition(player2CameraObject, player2EndCameraPosition);
 
@@ -300,8 +300,7 @@ public class LightCycle {
             // Skybox
             GameObject skybox = currentScene.createGameObject();
             skybox.addComponent(MeshGroup.class).setMeshes(createSkyboxMeshes(500f));
-
-
+            
             int nPower = 21;
             GameObject[] powerup = new GameObject[nPower];
             IMesh[] spheres = new IMesh[nPower];
