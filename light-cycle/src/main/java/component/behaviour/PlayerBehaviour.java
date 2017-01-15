@@ -1,6 +1,7 @@
 package component.behaviour;
 
 import ch.fhnw.ether.image.IGPUImage;
+import ch.fhnw.ether.platform.Platform;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.MeshUtilities;
@@ -248,19 +249,21 @@ public class PlayerBehaviour extends Behaviour {
     }
     
     public void onDraw(){
+    	int w = Platform.get().getMonitors()[0].getWidth()/2;
     	IGPUImage t = null;
         try {
             t = IGPUImage.read(LightCycle.class.getResource("/textures/draw.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-    	IMesh raw = LightCycle.createPanel(new Vec2(100,200), new Vec2(600,400),t, RGBA.BLACK  );
+    	IMesh raw = LightCycle.createPanel(new Vec2(150,0), new Vec2(w-300,(w-300)/1.6),t, RGBA.BLACK  );
     	GameObject g = getGameObject().getScene().createGameObject(); 
     	g.getTransform().setLocal(Mat4.translate(0,-0.5f,0));
     	g.addComponent(Mesh.class).setMesh(raw);
         updateCameraPositionToEnd();
     }
     public void onWin(){
+    	int w = Platform.get().getMonitors()[0].getWidth()/2;
     	IGPUImage t = null;
         try {
         	if(name.contains("1")){
@@ -272,7 +275,7 @@ public class PlayerBehaviour extends Behaviour {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    	IMesh raw = LightCycle.createPanel(new Vec2(100,200), new Vec2(600,400),t, RGBA.BLACK  );
+    	IMesh raw = LightCycle.createPanel(new Vec2(150,0), new Vec2(w-300,(w-300)/1.6),t, RGBA.BLACK  );
     	GameObject g = getGameObject().getScene().createGameObject(); 
     	g.getTransform().setLocal(Mat4.translate(0,-0.5f,0));
     	g.addComponent(Mesh.class).setMesh(raw);
