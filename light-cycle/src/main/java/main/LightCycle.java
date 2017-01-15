@@ -173,6 +173,7 @@ public class LightCycle {
 
             // player 1
             GameObject player1 = currentScene.createGameObject();
+
             //player1.getTransform().setLocal(Mat4.translate(0.4f, 0, -50));
             player1.getTransform().setLocal(Mat4.translate(0, 0, -50));
             PlayerBehaviour player1Behaviour = player1.addComponent(PlayerBehaviour.class);
@@ -187,9 +188,13 @@ public class LightCycle {
 
             // player 1 fake camera
             GameObject player1FakeCamera = currentScene.createGameObject(player1FakeCameraWrapper.getTransform());
-            player1FakeCamera.getTransform().setLocal(Mat4.rotate(50, 1, 0, 0));
+            player1FakeCamera.getTransform().setLocal(Mat4.rotate(35, 1, 0, 0));
             player1FakeCamera.addComponent(MeshGroup.class).setMeshes(player1FakeCameraMesh);
             player1FakeCamera.addComponent(Light.class).setLight(light3);
+
+            // player 1 end camera position
+            GameObject player1EndCameraPosition = currentScene.createGameObject(player1FakeCamera.getTransform());
+            player1EndCameraPosition.getTransform().setLocal(Mat4.translate(0, 0, 2));
 
             // player 1 Boostpower
             GameObject player1Boostpower = currentScene.createGameObject(player1.getTransform());
@@ -220,10 +225,12 @@ public class LightCycle {
 
             // player 1 camera
             GameObject player1CameraObject = currentScene.createGameObject(player1CameraWrapper.getTransform());
-            player1CameraObject.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,0.85f,-5f), Mat4.rotate(-5,1,0,0)));
+            player1CameraObject.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,0.85f,-5f), Mat4.rotate(-5,1,0,0)));;
             component.Camera player1CameraComponent = player1CameraObject.addComponent(component.Camera.class);
             player1CameraComponent.setState(player1View, player1Camera);
             //player1CameraObject.addComponent(Light.class).setLight(light1);
+
+            player1Behaviour.setCameraEndPosition(player1CameraObject, player1EndCameraPosition);
 
             // player 2
             GameObject player2 = currentScene.createGameObject();
@@ -271,11 +278,17 @@ public class LightCycle {
             player2FakeCameraWrapper.getTransform().setLocal(Mat4.translate(0,10f,-10f));
             player2FakeCameraWrapper.addComponent(FilmingAI.class).setTarget(player2.getTransform());
 
-            // player 2fake camera
+            // player 2 fake camera
             GameObject player2FakeCamera = currentScene.createGameObject(player2FakeCameraWrapper.getTransform());
-            player2FakeCamera.getTransform().setLocal(Mat4.rotate(50, 1, 0, 0));
+            player2FakeCamera.getTransform().setLocal(Mat4.rotate(35, 1, 0, 0));
             player2FakeCamera.addComponent(MeshGroup.class).setMeshes(player2FakeCameraMesh);
             player2FakeCamera.addComponent(Light.class).setLight(light4);
+
+            // player 2 end camera position
+            GameObject player2EndCameraPosition = currentScene.createGameObject(player2FakeCamera.getTransform());
+            player1EndCameraPosition.getTransform().setLocal(Mat4.translate(0, 0, 2));
+
+            player2Behaviour.setCameraEndPosition(player2CameraObject, player2EndCameraPosition);
 
             // attach listeners to game objects
             player1CameraObject.addComponent(AudioListenerComoponent.class).setAudioListener(currentScene.getAudioController().getAudioListener(0));

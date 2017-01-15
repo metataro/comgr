@@ -50,6 +50,9 @@ public class PlayerBehaviour extends Behaviour {
     private GameObject boostPowerObject;
     private IMesh deletedBoostMesh = null;
 
+    private GameObject camera;
+    private GameObject endPosition;
+
     public boolean isAlive() {
         return alive;
     }
@@ -64,6 +67,16 @@ public class PlayerBehaviour extends Behaviour {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setCameraEndPosition(GameObject camera, GameObject endPosition) {
+        this.camera = camera;
+        this.endPosition = endPosition;
+    }
+
+    public void updateCameraPositionToEnd() {
+        System.out.println("UPDATE CAMERA");
+        this.camera.getTransform().setParent(endPosition.getTransform());
     }
 
     public void setButtons(String left, String right, String speed) {
@@ -245,7 +258,7 @@ public class PlayerBehaviour extends Behaviour {
     	GameObject g = getGameObject().getScene().createGameObject(); 
     	g.getTransform().setLocal(Mat4.translate(0,-0.5f,0));
     	g.addComponent(Mesh.class).setMesh(raw);
-    	
+        updateCameraPositionToEnd();
     }
     public void onWin(){
     	IGPUImage t = null;
@@ -263,7 +276,7 @@ public class PlayerBehaviour extends Behaviour {
     	GameObject g = getGameObject().getScene().createGameObject(); 
     	g.getTransform().setLocal(Mat4.translate(0,-0.5f,0));
     	g.addComponent(Mesh.class).setMesh(raw);
-    	
+        updateCameraPositionToEnd();
     }
     
 }

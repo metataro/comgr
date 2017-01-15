@@ -61,7 +61,7 @@ public class Transform extends Component implements SceneGraphNode<Transform> {
     }
 
     public Vec3 getLocalLeft() {
-        return new Vec3(local.m01, local.m11, local.m21).normalize();
+        return new Vec3(local.m00, local.m10, local.m20).normalize();
     }
 
     public Vec3 getUp() {
