@@ -66,7 +66,7 @@ public class LightCycle {
 
     private final float fps = 60;
     private final int groundSize = 500;
-    private final int playAreaExtends = 200;
+    public final static int playAreaExtends = 200;
     
     private static GameObject[] powerup;
     private static GameObject[] powerupm;
@@ -373,9 +373,7 @@ public class LightCycle {
                 Random r = new Random();
                 int rx = r.nextInt(2 * playAreaExtends) - playAreaExtends;
                 int ry = r.nextInt(2 * playAreaExtends) - playAreaExtends;
-                rx = 0;
-                ry = 0;
-
+       
                 powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
                 powerupm[i].getTransform().setLocal(Mat4.translate(rx, -1f, ry));
                 powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);

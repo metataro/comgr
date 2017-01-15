@@ -69,8 +69,9 @@ public class PowerUpBehaviour extends Behaviour {
 		int i = LightCycle.getIndexPowerUp(go);
 		GameObject mirror = LightCycle.getMirrorPowerUp(i);
 		Random r = new Random(); 
-		int rx = r.nextInt(2000)-1000;
-		int ry = r.nextInt(2000)-1000;
+		int extend = LightCycle.playAreaExtends;
+		int rx = r.nextInt(2*extend)-extend;
+		int ry = r.nextInt(2*extend)-extend;
 		go.getTransform().setLocal(Mat4.translate(rx, 0, ry));
 		mirror.getTransform().setLocal(Mat4.translate(rx, -1, ry));
 	}
