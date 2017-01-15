@@ -68,6 +68,9 @@ public class LightCycle {
     private final int groundSize = 500;
     private final int playAreaExtends = 200;
     
+    private static GameObject[] powerup;
+    private static GameObject[] powerupm;
+    
     private IEventScheduler scheduler;
     private Scene currentScene;
     public LightCycle() {
@@ -80,6 +83,7 @@ public class LightCycle {
         }, fps);
     }
 
+    
     private List<IMesh> loadMeshList(String resource) {
         final URL obj = getClass().getResource(resource);
         final List<IMesh> meshes = new ArrayList<>();
@@ -321,19 +325,25 @@ public class LightCycle {
             GameObject boundingWalls = createBoundingWalls(currentScene, player1, player2);
 
             int nPower = 21;
-            GameObject[] powerup = new GameObject[nPower];
+            powerup = new GameObject[nPower];
             IMesh[] spheres = new IMesh[nPower];
+            powerupm = new GameObject[nPower];
+            IMesh[] spheresm = new IMesh[nPower];
             //add nPower powerups
             for(int i = 0; i < nPower/3; i++) {
 
                 spheres[i] = createColorSphere(new RGB(1, 0.5f, 0.5f));
                 powerup[i] = currentScene.createGameObject();
+                spheresm[i] = createColorSphere(new RGB(1, 0.5f, 0.5f));
+                powerupm[i] = currentScene.createGameObject();
                 Random r = new Random();
                 int rx = r.nextInt(2 * playAreaExtends) - playAreaExtends;
                 int ry = r.nextInt(2 * playAreaExtends) - playAreaExtends;
 
                 powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
+                powerupm[i].getTransform().setLocal(Mat4.translate(rx, -1f, ry));
                 powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
+                powerupm[i].addComponent(Mesh.class).setMesh(spheresm[i]);
                 powerup[i].addComponent(PowerUpBehaviour.class).setSound(AudioMaster.createAudioBufferFromWAV(LightCycle.class.getResource("/beam.wav")));
                 powerup[i].addComponent(SpeedPowerUp.class).setBoostTime(4);
                 powerup[i].addComponent(BoxCollider.class).setTrigger(true);
@@ -341,12 +351,16 @@ public class LightCycle {
             for(int i = nPower / 3; i < 2*(nPower/3); i++) {
                 spheres[i] = createColorSphere(new RGB(0.5f, 1, 0.5f));
                 powerup[i] = currentScene.createGameObject();
+                spheresm[i] = createColorSphere(new RGB(0.5f, 1, 0.5f));
+                powerupm[i] = currentScene.createGameObject();
                 Random r = new Random();
                 int rx = r.nextInt(2 * playAreaExtends) - playAreaExtends;
                 int ry = r.nextInt(2 * playAreaExtends) - playAreaExtends;
 
                 powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
+                powerupm[i].getTransform().setLocal(Mat4.translate(rx, -1f, ry));
                 powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
+                powerupm[i].addComponent(Mesh.class).setMesh(spheresm[i]);
                 powerup[i].addComponent(PowerUpBehaviour.class).setSound(AudioMaster.createAudioBufferFromWAV(LightCycle.class.getResource("/fanfare.wav")));
                 powerup[i].addComponent(DestroyTrailPowerUp.class);
                 powerup[i].addComponent(BoxCollider.class).setTrigger(true);
@@ -354,12 +368,18 @@ public class LightCycle {
             for(int i = 2*(nPower/3); i < nPower; i++) {
                 spheres[i] = createColorSphere(new RGB(0.5f, 0.5f, 1f));
                 powerup[i] = currentScene.createGameObject();
+                spheresm[i] = createColorSphere(new RGB(0.5f, 0.5f, 1f));
+                powerupm[i] = currentScene.createGameObject();
                 Random r = new Random();
                 int rx = r.nextInt(2 * playAreaExtends) - playAreaExtends;
                 int ry = r.nextInt(2 * playAreaExtends) - playAreaExtends;
+                rx = 0;
+                ry = 0;
 
                 powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
+                powerupm[i].getTransform().setLocal(Mat4.translate(rx, -1f, ry));
                 powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
+                powerupm[i].addComponent(Mesh.class).setMesh(spheresm[i]);
                 powerup[i].addComponent(PowerUpBehaviour.class).setSound(AudioMaster.createAudioBufferFromWAV(LightCycle.class.getResource("/fanfare.wav")));
                 powerup[i].addComponent(DestroyOtherTrailPowerUp.class);
                 powerup[i].addComponent(BoxCollider.class).setTrigger(true);
@@ -519,6 +539,18 @@ public class LightCycle {
         return ground;
     }
 
+    public static int getIndexPowerUp(GameObject o){
+    	for(int i =0; i<powerup.length; i++){
+    		if(powerup[i].equals(o)){
+    			return i;
+    		}
+    	}
+    	return 0;
+    }
+    
+    public static GameObject getMirrorPowerUp(int i){
+    	return powerupm[i];
+    }
 	public static List<IMesh> createGroundPlane(IMaterial material, float extent, int tileCount) {
 		float y = -0.5f;
 

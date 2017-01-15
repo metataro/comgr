@@ -43,6 +43,9 @@ public class PowerUpBehaviour extends Behaviour {
 		float targetY = minY + Math.abs(maxY - minY) * (float)Math.sin(modifier) / 2;
 		modifier += bumpSpeed*deltaTime;
 		getTransform().translate(0, targetY - position.y, 0);
+		int i = LightCycle.getIndexPowerUp(getGameObject());
+		GameObject mirror = LightCycle.getMirrorPowerUp(i);
+		mirror.getTransform().translate(0,-(targetY - position.y),0);
 	}
 
 	@Override
@@ -63,9 +66,12 @@ public class PowerUpBehaviour extends Behaviour {
     }
 
 	public void movePowerUp(GameObject go) {
+		int i = LightCycle.getIndexPowerUp(go);
+		GameObject mirror = LightCycle.getMirrorPowerUp(i);
 		Random r = new Random(); 
 		int rx = r.nextInt(2000)-1000;
 		int ry = r.nextInt(2000)-1000;
 		go.getTransform().setLocal(Mat4.translate(rx, 0, ry));
+		mirror.getTransform().setLocal(Mat4.translate(rx, -1, ry));
 	}
 }
