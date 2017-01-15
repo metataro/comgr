@@ -32,6 +32,14 @@ public class BehaviourSystem extends System {
         	b1.onDraw();
         	b2.onDraw();
         }
+        if(event instanceof Event.PlayerWonEvent){
+        	Event.PlayerWonEvent playerWonEvent= (Event.PlayerWonEvent) event;
+        	PlayerBehaviour b1 = playerWonEvent.playerBehaviour;
+        			
+        	
+        	b1.onWin();
+        	
+        }
     }
 
     private void handleCollision(Behaviour behaviour, Collider otherCollider) {

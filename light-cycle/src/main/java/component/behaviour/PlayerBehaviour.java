@@ -235,10 +235,27 @@ public class PlayerBehaviour extends Behaviour {
     }
     
     public void onDraw(){
-    	System.out.println("works");
     	IGPUImage t = null;
         try {
             t = IGPUImage.read(LightCycle.class.getResource("/textures/draw.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    	IMesh raw = LightCycle.createPanel(new Vec2(100,200), new Vec2(600,400),t, RGBA.BLACK  );
+    	GameObject g = getGameObject().getScene().createGameObject(); 
+    	g.getTransform().setLocal(Mat4.translate(0,-0.5f,0));
+    	g.addComponent(Mesh.class).setMesh(raw);
+    	
+    }
+    public void onWin(){
+    	IGPUImage t = null;
+        try {
+        	if(name.contains("1")){
+        		t = IGPUImage.read(LightCycle.class.getResource("/textures/player1won.png"));
+        	}else{
+        		t = IGPUImage.read(LightCycle.class.getResource("/textures/player2won.png"));
+        		
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
