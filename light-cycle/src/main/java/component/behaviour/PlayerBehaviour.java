@@ -75,7 +75,6 @@ public class PlayerBehaviour extends Behaviour {
     }
 
     public void updateCameraPositionToEnd() {
-        System.out.println("UPDATE CAMERA");
         this.camera.getTransform().setParent(endPosition.getTransform());
     }
 

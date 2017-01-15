@@ -160,9 +160,6 @@ public class LightCycle {
             final IMesh boostPower1 = MeshUtilities.createQuad(new ShadedMaterial(RGB.WHITE, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 10, 1, t2), Queue.TRANSPARENCY, EnumSet.of(Flag.DONT_CAST_SHADOW));//loadMeshList("/boostPower.obj").get(0);
             final IMesh boostPower2 = boostPower1.createInstance();
             final List<IMesh> player1FakeCameraMesh = loadMeshList("/camera.obj");
-            for (IMesh a : player1FakeCameraMesh) {
-                java.lang.System.out.println(Arrays.toString(a.getMaterial().getData()));
-            }
             final List<IMesh> player2FakeCameraMesh = player1FakeCameraMesh.stream().map(IMesh::createInstance).collect(Collectors.toList());
 
             //Ground
@@ -300,7 +297,7 @@ public class LightCycle {
             // Skybox
             GameObject skybox = currentScene.createGameObject();
             skybox.addComponent(MeshGroup.class).setMeshes(createSkyboxMeshes(500f));
-            
+
             int nPower = 21;
             GameObject[] powerup = new GameObject[nPower];
             IMesh[] spheres = new IMesh[nPower];
