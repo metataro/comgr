@@ -38,6 +38,6 @@ public class Camera extends Component {
 
     @Override
     public void destroy() {
-        renderManager.removeView(targetView);
+        //renderManager.removeView(targetView);
     }
 }

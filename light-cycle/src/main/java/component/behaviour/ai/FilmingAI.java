@@ -16,6 +16,7 @@ public class FilmingAI extends Behaviour {
 
     private Transform target;
     private Vec3 velocity = new Vec3(0, 0, 0);
+    private boolean left = true;
 
     @Override
     public void update(float deltaTime) {
@@ -30,12 +31,16 @@ public class FilmingAI extends Behaviour {
         Random r = new Random();
         int randomInt = r.nextInt(50);
         if (diffXZ.length() <= randomInt) {
-            velocity = velocity.add(new Vec3(r.nextFloat() - 0.5f, 0, r.nextFloat() - 0.5f).normalize().scale(0.01f));
+            if (randomInt == 1) {
+                left = !left;
+            }
+            Vec3 dir = this.getTransform().getLocalLeft();
+            velocity = velocity.add(dir.normalize().scale(0.01f));
         } else {
             velocity = velocity.add(diffXZ.normalize().scale(0.01f));
         }
 
-        if (velocity.length() > 0.5f) velocity = velocity.scale(0.5f);
+        velocity = velocity.scale(0.99f);
 
         double temp = diffXZ.normalize().dot(getTransform().getLocalForward());
 

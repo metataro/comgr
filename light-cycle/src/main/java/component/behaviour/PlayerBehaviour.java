@@ -1,6 +1,7 @@
 package component.behaviour;
 
 import ch.fhnw.ether.image.IGPUImage;
+import ch.fhnw.ether.platform.Platform;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.MeshUtilities;
@@ -50,6 +51,9 @@ public class PlayerBehaviour extends Behaviour {
     private GameObject boostPowerObject;
     private IMesh deletedBoostMesh = null;
 
+    private GameObject camera;
+    private GameObject endPosition;
+
     public boolean isAlive() {
         return alive;
     }
@@ -64,6 +68,15 @@ public class PlayerBehaviour extends Behaviour {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setCameraEndPosition(GameObject camera, GameObject endPosition) {
+        this.camera = camera;
+        this.endPosition = endPosition;
+    }
+
+    public void updateCameraPositionToEnd() {
+        this.camera.getTransform().setParent(endPosition.getTransform());
     }
 
     public void setButtons(String left, String right, String speed) {
@@ -233,37 +246,44 @@ public class PlayerBehaviour extends Behaviour {
     public void setBoostPowerObject(GameObject boostPowerObject) {
         this.boostPowerObject = boostPowerObject;
     }
-    
-    public void onDraw(){
+
+    public void onLose() {
+        updateCameraPositionToEnd();
+    }
+
+    public void onDraw() {
+    	int w = Platform.get().getMonitors()[0].getWidth()/2;
     	IGPUImage t = null;
         try {
             t = IGPUImage.read(LightCycle.class.getResource("/textures/draw.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-    	IMesh raw = LightCycle.createPanel(new Vec2(100,200), new Vec2(600,400),t, RGBA.BLACK  );
+    	IMesh raw = LightCycle.createPanel(new Vec2(150,0), new Vec2(w-300,(w-300)/1.6),t, RGBA.BLACK  );
     	GameObject g = getGameObject().getScene().createGameObject(); 
     	g.getTransform().setLocal(Mat4.translate(0,-0.5f,0));
     	g.addComponent(Mesh.class).setMesh(raw);
-    	
+        updateCameraPositionToEnd();
     }
+
     public void onWin(){
+    	int w = Platform.get().getMonitors()[0].getWidth()/2;
+
     	IGPUImage t = null;
         try {
-        	if(name.contains("1")){
+        	if (name.contains("1")) {
         		t = IGPUImage.read(LightCycle.class.getResource("/textures/player1won.png"));
-        	}else{
+        	} else {
         		t = IGPUImage.read(LightCycle.class.getResource("/textures/player2won.png"));
-        		
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-    	IMesh raw = LightCycle.createPanel(new Vec2(100,200), new Vec2(600,400),t, RGBA.BLACK  );
+    	IMesh raw = LightCycle.createPanel(new Vec2(150,0), new Vec2(w-300,(w-300)/1.6),t, RGBA.BLACK  );
     	GameObject g = getGameObject().getScene().createGameObject(); 
     	g.getTransform().setLocal(Mat4.translate(0,-0.5f,0));
     	g.addComponent(Mesh.class).setMesh(raw);
-    	
+        updateCameraPositionToEnd();
     }
     
 }

@@ -140,4 +140,8 @@ public class Scene {
         return createGameObject(sceneGraph.getRoot());
     }
 
+    public void destroy() {
+        gameObjectManager.forEach(GameObject::destroy);
+    }
+
 }
