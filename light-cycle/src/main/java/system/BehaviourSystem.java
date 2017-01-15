@@ -1,6 +1,7 @@
 package system;
 
 import component.behaviour.Behaviour;
+import component.behaviour.PlayerBehaviour;
 import component.collider.Collider;
 import event.Event;
 
@@ -23,6 +24,21 @@ public class BehaviourSystem extends System {
             Optional<Behaviour> b2 = collisionEvent.collider2.getGameObject().getComponent(Behaviour.class);
             b1.ifPresent(behaviour -> handleCollision(behaviour, collisionEvent.collider2));
             b2.ifPresent(behaviour -> handleCollision(behaviour, collisionEvent.collider1));
+        }
+        if(event instanceof Event.DrawEvent){
+        	Event.DrawEvent drawEvent= (Event.DrawEvent) event;
+        	PlayerBehaviour b1 = drawEvent.playerBehaviours.get(0);
+        	PlayerBehaviour b2 = drawEvent.playerBehaviours.get(1);
+        	b1.onDraw();
+        	b2.onDraw();
+        }
+        if(event instanceof Event.PlayerWonEvent){
+        	Event.PlayerWonEvent playerWonEvent= (Event.PlayerWonEvent) event;
+        	PlayerBehaviour b1 = playerWonEvent.playerBehaviour;
+        			
+        	
+        	b1.onWin();
+        	
         }
     }
 
