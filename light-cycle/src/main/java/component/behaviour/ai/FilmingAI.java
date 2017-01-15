@@ -37,13 +37,14 @@ public class FilmingAI extends Behaviour {
 
         if (velocity.length() > 0.8f) velocity = velocity.scale(0.5f);
 
-        double temp = getTransform().getLocalForward().dot(diffXZ.normalize());
+        double temp = diffXZ.normalize().dot(getTransform().getLocalForward());
 
         if (temp > 1) temp = 1;
         else if (temp < -1) temp = -1;
         float angle = (float) Math.acos(temp);
 
-        getTransform().rotate(MathUtilities.RADIANS_TO_DEGREES * angle, 0, 1, 0);
+        double cross = getTransform().getLocalForward().cross(diffXZ.normalize()).y;
+        getTransform().rotate(MathUtilities.RADIANS_TO_DEGREES * angle, 0, (cross > 0) ? 1 : -1, 0);
 
     }
 
