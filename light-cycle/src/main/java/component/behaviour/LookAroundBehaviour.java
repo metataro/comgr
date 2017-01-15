@@ -30,19 +30,19 @@ public class LookAroundBehaviour extends Behaviour {
 
         // turn left
         if (turnLeftRequest && !turnedLeft) {
-            getGameObject().transform.rotateLeft(90);
+            getGameObject().transform.rotateLeft(degree);
             turnedLeft = true;
         } else if (!turnLeftRequest && turnedLeft) {
-            getGameObject().transform.rotateRight(90);
+            getGameObject().transform.rotateRight(degree);
             turnedLeft = false;
         }
 
         // turn right
         if (turnRightRequest && !turnedRight) {
-            getGameObject().transform.rotateRight(90);
+            getGameObject().transform.rotateRight(degree);
             turnedRight = true;
         } else if (!turnRightRequest && turnedRight) {
-            getGameObject().transform.rotateLeft(90);
+            getGameObject().transform.rotateLeft(degree);
             turnedRight = false;
         }
 
