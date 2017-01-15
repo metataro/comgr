@@ -7,7 +7,6 @@ import ch.fhnw.ether.formats.obj.ObjReader;
 import ch.fhnw.ether.image.IGPUImage;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.platform.Platform;
-import ch.fhnw.ether.render.IRenderManager;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.DirectionalLight;
@@ -45,7 +44,6 @@ import component.powerup.SpeedPowerUp;
 import gameobject.GameObject;
 import inputdevice.*;
 import inputdevice.Input.Buttons;
-import org.lwjgl.Sys;
 import org.lwjgl.glfw.GLFW;
 import render.View;
 import render.mesh.material.PanelMaterial;
@@ -55,8 +53,6 @@ import scene.Scene;
 import system.*;
 
 import java.io.IOException;
-import java.lang.System;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,7 +60,8 @@ import java.util.stream.Collectors;
 public class LightCycle {
 
     private final float fps = 60;
-    private final int groundsize = 500;
+    private final int groundSize = 500;
+    private final int playAreaExtends = 200;
     
     private IEventScheduler scheduler;
     private Scene currentScene;
@@ -173,6 +170,9 @@ public class LightCycle {
             //Ground
             GameObject ground = createGround(currentScene);
 
+            // Playing area bounding walls
+            GameObject boundingWalls = createBoundingWalls(currentScene);
+
             // player 1
             GameObject player1 = currentScene.createGameObject();
             //player1.getTransform().setLocal(Mat4.translate(0.4f, 0, -50));
@@ -221,8 +221,8 @@ public class LightCycle {
                 spheres[i] = sphere.createInstance();
                 powerup[i] = currentScene.createGameObject();
                 Random r = new Random();
-                int rx = r.nextInt(2 * groundsize) - groundsize;
-                int ry = r.nextInt(2 * groundsize) - groundsize;
+                int rx = r.nextInt(2 * playAreaExtends) - playAreaExtends;
+                int ry = r.nextInt(2 * playAreaExtends) - playAreaExtends;
 
                 powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
                 powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
@@ -234,8 +234,8 @@ public class LightCycle {
                 spheres[i] = sphere.createInstance();
                 powerup[i] = currentScene.createGameObject();
                 Random r = new Random();
-                int rx = r.nextInt(2 * groundsize) - groundsize;
-                int ry = r.nextInt(2 * groundsize) - groundsize;
+                int rx = r.nextInt(2 * playAreaExtends) - playAreaExtends;
+                int ry = r.nextInt(2 * playAreaExtends) - playAreaExtends;
 
                 powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
                 powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
@@ -247,8 +247,8 @@ public class LightCycle {
                 spheres[i] = sphere.createInstance();
                 powerup[i] = currentScene.createGameObject();
                 Random r = new Random();
-                int rx = r.nextInt(2 * groundsize) - groundsize;
-                int ry = r.nextInt(2 * groundsize) - groundsize;
+                int rx = r.nextInt(2 * playAreaExtends) - playAreaExtends;
+                int ry = r.nextInt(2 * playAreaExtends) - playAreaExtends;
 
                 powerup[i].getTransform().setLocal(Mat4.translate(rx, 0, ry));
                 powerup[i].addComponent(Mesh.class).setMesh(spheres[i]);
@@ -344,6 +344,99 @@ public class LightCycle {
         Platform.get().run();
     }
 
+    private GameObject createBoundingWalls(Scene currentScene) {
+        GameObject result = currentScene.createGameObject();
+
+        IGPUImage wallTexture = null;
+        try {
+            wallTexture = IGPUImage.read(LightCycle.class.getResource("/textures/boundary.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        IMaterial material = new ColorMapMaterial(wallTexture);
+
+        final float middleY = -0.5f;
+        final int sideCount = 50;
+        final int layers = 1 * 2;
+
+        List<IMesh> rawMeshes = new ArrayList<>();
+
+        for(int layer = 0; layer < layers; layer++) {
+            IMesh newMesh = createCylinder(sideCount, material);
+            newMesh.setPosition(new Vec3(0, 16f * layer, 0));
+            rawMeshes.add(newMesh);
+        }
+
+        MeshGroup meshGroup = result.addComponent(MeshGroup.class);
+        meshGroup.setMeshes(rawMeshes);
+        meshGroup.getTransform().scale(new Vec3(playAreaExtends, 16, playAreaExtends));
+        meshGroup.getTransform().translate(0, -(layers * 16 / 2f) + middleY, 0);
+
+        return result;
+    }
+
+    private IMesh createCylinder(int n, IMaterial material) {
+        float[] v = new float[6 * 3 * n];
+        float[] m = new float[6 * 2 * n];
+        final double fullCircle = Math.PI * 2.0;
+        final double step = fullCircle / n;
+
+        for(int i = 0; i < n; i++) {
+            double angle = step * i;
+            double prevAngle = step * (i - 1);
+
+            float x = (float)Math.sin(angle);
+            float z = (float)Math.cos(angle);
+            float prevX = (float)Math.sin(prevAngle);
+            float prevZ = (float)Math.cos(prevAngle);
+
+            int offset = 0;
+
+            v[18 * i + (offset++)] = x;
+            v[18 * i + (offset++)] = 0;
+            v[18 * i + (offset++)] = z;
+
+            v[18 * i + (offset++)] = prevX;
+            v[18 * i + (offset++)] = 1;
+            v[18 * i + (offset++)] = prevZ;
+
+            v[18 * i + (offset++)] = x;
+            v[18 * i + (offset++)] = 1;
+            v[18 * i + (offset++)] = z;
+
+            v[18 * i + (offset++)] = x;
+            v[18 * i + (offset++)] = 0;
+            v[18 * i + (offset++)] = z;
+
+            v[18 * i + (offset++)] = prevX;
+            v[18 * i + (offset++)] = 0;
+            v[18 * i + (offset++)] = prevZ;
+
+            v[18 * i + (offset++)] = prevX;
+            v[18 * i + (offset++)] = 1;
+            v[18 * i + (offset++)] = prevZ;
+
+            offset = 0;
+            m[12 * i + (offset++)] = 0;
+            m[12 * i + (offset++)] = 1;
+            m[12 * i + (offset++)] = 1;
+            m[12 * i + (offset++)] = 0;
+            m[12 * i + (offset++)] = 0;
+            m[12 * i + (offset++)] = 0;
+
+            m[12 * i + (offset++)] = 0;
+            m[12 * i + (offset++)] = 1;
+            m[12 * i + (offset++)] = 1;
+            m[12 * i + (offset++)] = 1;
+            m[12 * i + (offset++)] = 1;
+            m[12 * i + (offset++)] = 0;
+        }
+
+        IGeometry geometry = DefaultGeometry.createVM(v, m);
+        return new DefaultMesh(Primitive.TRIANGLES, material, geometry, Queue.TRANSPARENCY, Flag.DONT_CAST_SHADOW);
+    }
+
     public static void main(String[] args) throws InterruptedException, IOException, RenderCommandException {
         LightCycle ls = new LightCycle();
         ls.run();
@@ -361,7 +454,7 @@ public class LightCycle {
         IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 0.8f, groundTexture);
 
         // Create meshes
-        List<IMesh> groundMeshes = createGroundPlane(textureMaterial, groundsize, 20);
+        List<IMesh> groundMeshes = createGroundPlane(textureMaterial, groundSize, 20);
 
         // Create game object
         GameObject ground = currentScene.createGameObject();
