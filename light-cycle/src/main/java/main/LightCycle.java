@@ -391,11 +391,11 @@ public class LightCycle {
 
         // Create tiles
 		List<IMesh> result = new ArrayList<>(tileCount * tileCount);
-        for(int tileY = 0; tileY < tileCount; tileY++) {
+        for(int tileZ = 0; tileZ < tileCount; tileZ++) {
             for(int tileX = 0; tileX < tileCount; tileX++) {
                 // Calculate tile position
                 float posX = tileX * tileSize - extent;
-                float posZ = tileY * tileSize - extent;
+                float posZ = tileZ * tileSize - extent;
 
                 // Calculate tile vertices
                 float[] v = {
