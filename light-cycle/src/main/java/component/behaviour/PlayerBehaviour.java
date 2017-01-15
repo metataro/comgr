@@ -76,7 +76,6 @@ public class PlayerBehaviour extends Behaviour {
     }
 
     public void updateCameraPositionToEnd() {
-        System.out.println("UPDATE CAMERA");
         this.camera.getTransform().setParent(endPosition.getTransform());
     }
 
@@ -247,8 +246,12 @@ public class PlayerBehaviour extends Behaviour {
     public void setBoostPowerObject(GameObject boostPowerObject) {
         this.boostPowerObject = boostPowerObject;
     }
-    
-    public void onDraw(){
+
+    public void onLose() {
+        updateCameraPositionToEnd();
+    }
+
+    public void onDraw() {
     	int w = Platform.get().getMonitors()[0].getWidth()/2;
     	IGPUImage t = null;
         try {
@@ -262,15 +265,16 @@ public class PlayerBehaviour extends Behaviour {
     	g.addComponent(Mesh.class).setMesh(raw);
         updateCameraPositionToEnd();
     }
+
     public void onWin(){
     	int w = Platform.get().getMonitors()[0].getWidth()/2;
+
     	IGPUImage t = null;
         try {
-        	if(name.contains("1")){
+        	if (name.contains("1")) {
         		t = IGPUImage.read(LightCycle.class.getResource("/textures/player1won.png"));
-        	}else{
+        	} else {
         		t = IGPUImage.read(LightCycle.class.getResource("/textures/player2won.png"));
-        		
             }
         } catch (IOException e) {
             e.printStackTrace();

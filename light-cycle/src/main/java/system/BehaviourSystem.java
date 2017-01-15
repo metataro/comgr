@@ -35,8 +35,8 @@ public class BehaviourSystem extends System {
         if(event instanceof Event.PlayerWonEvent){
         	Event.PlayerWonEvent playerWonEvent= (Event.PlayerWonEvent) event;
         	PlayerBehaviour b1 = playerWonEvent.playerBehaviour;
-        			
-        	
+            playerWonEvent.losers.forEach(PlayerBehaviour::onLose);
+
         	b1.onWin();
         	
         }
