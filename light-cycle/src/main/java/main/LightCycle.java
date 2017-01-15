@@ -20,7 +20,11 @@ import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+<<<<<<< HEAD
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+=======
+import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
+>>>>>>> d5dd664eb9ced96dd900e9ae53e08653d3d47f68
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 import ch.fhnw.ether.view.IView;
@@ -45,6 +49,7 @@ import component.powerup.SpeedPowerUp;
 import gameobject.GameObject;
 import inputdevice.*;
 import inputdevice.Input.Buttons;
+import org.lwjgl.Sys;
 import org.lwjgl.glfw.GLFW;
 import render.View;
 import render.mesh.material.PanelMaterial;
@@ -61,7 +66,7 @@ import java.util.stream.Collectors;
 public class LightCycle {
 
     private final float fps = 60;
-    private final int groundsize = 1000;
+    private final int groundsize = 500;
     
     private IEventScheduler scheduler;
     private Scene currentScene;
@@ -144,19 +149,11 @@ public class LightCycle {
             //ILight light1 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
             //ILight light2 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
             ILight light3 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
+            ILight light4 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
             currentScene.getRenderManager().addLight(mainLight1);
             currentScene.getRenderManager().addLight(mainLight2);
-
+            
             // meshes
-            IGPUImage t = null;
-            try {
-                t = IGPUImage.read(LightCycle.class.getResource("/textures/floor.jpg"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 0.8f, t);
-            IMesh groundMesh = createGroundPlane(textureMaterial, groundsize);
-
             final List<IMesh> lightCycle1 = loadMeshList("/lightcycle/HQ_Moviecycle.obj");
 
             final List<IMesh> lightCycle2 = lightCycle1.stream().map(IMesh::createInstance).collect(Collectors.toList());
@@ -169,14 +166,14 @@ public class LightCycle {
             }
             final IMesh boostPower1 = MeshUtilities.createQuad(new ShadedMaterial(RGB.WHITE, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 10, 1, t2), Queue.TRANSPARENCY, EnumSet.of(Flag.DONT_CAST_SHADOW));//loadMeshList("/boostPower.obj").get(0);
             final IMesh boostPower2 = boostPower1.createInstance();
-            final List<IMesh> fakeCameraMesh = loadMeshList("/camera.obj");
-
+            final List<IMesh> player1FakeCameraMesh = loadMeshList("/camera.obj");
+            for (IMesh a : player1FakeCameraMesh) {
+                java.lang.System.out.println(Arrays.toString(a.getMaterial().getData()));
+            }
+            final List<IMesh> player2FakeCameraMesh = player1FakeCameraMesh.stream().map(IMesh::createInstance).collect(Collectors.toList());
 
             //Ground
-            GameObject ground = currentScene.createGameObject();
-            ground.getTransform().setLocal(Mat4.multiply(Mat4.translate(0,-0.5f,0), Mat4.rotate(-90,1,0,0)));
-            Mesh groundMeshComp = ground.addComponent(Mesh.class);
-            groundMeshComp.setMesh(groundMesh);
+            GameObject ground = createGround(currentScene);
 
             // player 1
             GameObject player1 = currentScene.createGameObject();
@@ -187,16 +184,16 @@ public class LightCycle {
             player1Behaviour.setButtons(Buttons.P1_LEFT, Buttons.P1_RIGHT, Buttons.P1_SPEED);
             player1Behaviour.setTrailMaterial("wall_green");
 
-            // fake camera wrapper
-            GameObject fakeCameraWrapper = currentScene.createGameObject();
-            fakeCameraWrapper.getTransform().setLocal(Mat4.translate(0,10f,10f));
-            fakeCameraWrapper.addComponent(FilmingAI.class).setTarget(player1.getTransform());
+            // player 1 fake camera wrapper
+            GameObject player1FakeCameraWrapper = currentScene.createGameObject();
+            player1FakeCameraWrapper.getTransform().setLocal(Mat4.translate(0,10f,10f));
+            player1FakeCameraWrapper.addComponent(FilmingAI.class).setTarget(player1.getTransform());
 
-            // fake camera
-            GameObject fakeCamera = currentScene.createGameObject(fakeCameraWrapper.getTransform());
-            fakeCamera.getTransform().setLocal(Mat4.rotate(50, 1, 0, 0));
-            fakeCamera.addComponent(MeshGroup.class).setMeshes(fakeCameraMesh);
-            fakeCamera.addComponent(Light.class).setLight(light3);
+            // player 1 fake camera
+            GameObject player1FakeCamera = currentScene.createGameObject(player1FakeCameraWrapper.getTransform());
+            player1FakeCamera.getTransform().setLocal(Mat4.rotate(50, 1, 0, 0));
+            player1FakeCamera.addComponent(MeshGroup.class).setMeshes(player1FakeCameraMesh);
+            player1FakeCamera.addComponent(Light.class).setLight(light3);
 
             // player 1 Boostpower
             GameObject player1Boostpower = currentScene.createGameObject(player1.getTransform());
@@ -318,6 +315,17 @@ public class LightCycle {
             player2CameraComponent.setState(player2View, player2Camera);
             //player2CameraObject.addComponent(Light.class).setLight(light2);
 
+            // player 2 fake camera wrapper
+            GameObject player2FakeCameraWrapper = currentScene.createGameObject();
+            player2FakeCameraWrapper.getTransform().setLocal(Mat4.translate(0,10f,-10f));
+            player2FakeCameraWrapper.addComponent(FilmingAI.class).setTarget(player2.getTransform());
+
+            // player 2fake camera
+            GameObject player2FakeCamera = currentScene.createGameObject(player2FakeCameraWrapper.getTransform());
+            player2FakeCamera.getTransform().setLocal(Mat4.rotate(50, 1, 0, 0));
+            player2FakeCamera.addComponent(MeshGroup.class).setMeshes(player2FakeCameraMesh);
+            player2FakeCamera.addComponent(Light.class).setLight(light4);
+
             // attach listeners to game objects
             player1CameraObject.addComponent(AudioListenerComoponent.class).setAudioListener(currentScene.getAudioController().getAudioListener(0));
             player2CameraObject.addComponent(AudioListenerComoponent.class).setAudioListener(currentScene.getAudioController().getAudioListener(1));
@@ -342,15 +350,73 @@ public class LightCycle {
         LightCycle ls = new LightCycle();
         ls.run();
     }
-    
-	public static IMesh createGroundPlane(IMaterial material, float extent) {
-		float e = extent;
-		float z = 0;
-		float[] v = { -e, -e, z, e, -e, z, e, e, z, -e, -e, z, e, e, z, -e, e, z };
-		float[] n = MeshUtilities.UNIT_QUAD_NORMALS;
-		float[] m = MeshUtilities.UNIT_QUAD_TEX_COORDS;
-		IGeometry g = requireTexCoords(material) ? DefaultGeometry.createVNM(v, n, m) :  DefaultGeometry.createVN(v, n);
-		return new DefaultMesh(Primitive.TRIANGLES, material, g, Queue.TRANSPARENCY,  Flag.DONT_CAST_SHADOW);
+
+    private GameObject createGround(Scene currentScene) {
+        // Create material
+        IGPUImage groundTexture = null;
+        try {
+            groundTexture = IGPUImage.read(LightCycle.class.getResource("/textures/floor.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // TODO: Don't use shaded material?
+        IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 0.8f, groundTexture);
+
+        // Create meshes
+        List<IMesh> groundMeshes = createGroundPlane(textureMaterial, groundsize, 20);
+
+        // Create game object
+        GameObject ground = currentScene.createGameObject();
+        MeshGroup meshComponent = ground.addComponent(MeshGroup.class);
+        meshComponent.setMeshes(groundMeshes);
+
+        return ground;
+    }
+
+	public static List<IMesh> createGroundPlane(IMaterial material, float extent, int tileCount) {
+		float y = -0.5f;
+
+		// Normals
+        final float[] n = {
+            0, 1, 0, 0, 1, 0, 0, 1, 0,
+            0, 1, 0, 0, 1, 0, 0, 1, 0,
+        };
+
+        // Tex coords
+        final float[] m = {
+            1, 0, 0, 0, 1, 1,
+            1, 1, 0, 0, 0, 1,
+        };
+
+		// Calculate tile size per dimension
+        float tileSize = 2 * extent / tileCount;
+
+        // Create tiles
+		List<IMesh> result = new ArrayList<>(tileCount * tileCount);
+        for(int tileZ = 0; tileZ < tileCount; tileZ++) {
+            for(int tileX = 0; tileX < tileCount; tileX++) {
+                // Calculate tile position
+                float posX = tileX * tileSize - extent;
+                float posZ = tileZ * tileSize - extent;
+
+                // Calculate tile vertices
+                float[] v = {
+                        posX + tileSize, y, posZ,
+                        posX, y, posZ,
+                        posX + tileSize, y, posZ + tileSize,
+
+                        posX + tileSize, y, posZ + tileSize,
+                        posX, y, posZ,
+                        posX, y, posZ + tileSize,
+                };
+
+                // Create tile geometry and mesh
+                IGeometry tileGeometry = requireTexCoords(material) ? DefaultGeometry.createVNM(v, n, m) :  DefaultGeometry.createVN(v, n);
+                result.add(new DefaultMesh(Primitive.TRIANGLES, material, tileGeometry, Queue.TRANSPARENCY,  Flag.DONT_CAST_SHADOW));
+            }
+        }
+
+		return result;
 	}
 	
 	private static boolean requireTexCoords(IMaterial material) {

@@ -35,7 +35,7 @@ public class FilmingAI extends Behaviour {
             velocity = velocity.add(diffXZ.normalize().scale(0.01f));
         }
 
-        if (velocity.length() > 0.8f) velocity = velocity.scale(0.5f);
+        if (velocity.length() > 0.5f) velocity = velocity.scale(0.5f);
 
         double temp = diffXZ.normalize().dot(getTransform().getLocalForward());
 
