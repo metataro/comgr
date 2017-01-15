@@ -346,11 +346,29 @@ public class LightCycle {
                 powerup[i].addComponent(DestroyOtherTrailPowerUp.class);
                 powerup[i].addComponent(BoxCollider.class).setTrigger(true);
             }
+            // Obstacle
+            GameObject boxObstacle1 = createBoxObstacle(currentScene);
+            boxObstacle1.getTransform().setLocal(Mat4.multiply(Mat4.translate(-30, 0, 0), Mat4.scale(new Vec3(5, 5, 40))));
+            GameObject boxObstacle2 = createBoxObstacle(currentScene);
+            boxObstacle2.getTransform().setLocal(Mat4.multiply(Mat4.translate(80, 0, 0), Mat4.scale(new Vec3(40, 10, 10))));
+            GameObject boxObstacle3 = createBoxObstacle(currentScene);
+            boxObstacle3.getTransform().setLocal(Mat4.multiply(Mat4.translate(-30, 0, 25), Mat4.scale(new Vec3(10, 8, 10))));
+            GameObject boxObstacle4 = createBoxObstacle(currentScene);
+            boxObstacle4.getTransform().setLocal(Mat4.multiply(Mat4.translate(-100, 0, -100), Mat4.scale(new Vec3(3, 50, 3))));
         });
 
         Thread.sleep(100);
 
         Platform.get().run();
+    }
+
+    private GameObject createBoxObstacle(Scene currentScene) {
+        GameObject boxObstacle = currentScene.createGameObject();
+        IMaterial boxMaterial = new ShadedMaterial(RGB.BLACK, RGB.BLACK, RGB.BLACK, RGB.WHITE, 10, 5, 1);
+        IMesh boxMesh = MeshUtilities.createCube(boxMaterial);
+        boxObstacle.addComponent(Mesh.class).setMesh(boxMesh);
+        boxObstacle.addComponent(BoxCollider.class);
+        return boxObstacle;
     }
 
     private GameObject createBoundingWalls(Scene currentScene) {
