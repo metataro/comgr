@@ -66,7 +66,6 @@ public class LightCycle {
     
     private IEventScheduler scheduler;
     private Scene currentScene;
-
     public LightCycle() {
         scheduler = new DefaultEventScheduler(() -> {
             if (currentScene != null) {
@@ -140,10 +139,8 @@ public class LightCycle {
             ICamera player2Camera = new Camera(Vec3.ZERO, Vec3.Z);
 
             // lights
-            ILight mainLight1 = new DirectionalLight(new Vec3(0.3, 1, -0.3), RGB.BLACK, RGB.GRAY80);
-            ILight mainLight2 = new DirectionalLight(new Vec3(-0.3, 1, 0.3), RGB.BLACK, RGB.GRAY80);
-            //ILight light1 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
-            //ILight light2 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
+            ILight mainLight1 = new DirectionalLight(new Vec3(0.5, 1, -0.5), RGB.BLACK, RGB.GRAY80);
+            ILight mainLight2 = new DirectionalLight(new Vec3(-0.5, 1, 0.5), RGB.BLACK, RGB.GRAY80);
             ILight light3 = new SpotLight(Vec3.ZERO, RGB.LIGHT_GRAY, RGB.LIGHT_GRAY, Vec3.Z, 30, 1f);
             ILight light4 = new SpotLight(Vec3.ZERO, RGB.LIGHT_GRAY, RGB.LIGHT_GRAY, Vec3.Z, 30, 1f);
             currentScene.getRenderManager().addLight(mainLight1);
@@ -153,7 +150,7 @@ public class LightCycle {
             final List<IMesh> lightCycle1 = loadMeshList("/lightcycle/HQ_Moviecycle.obj");
 
             final List<IMesh> lightCycle2 = lightCycle1.stream().map(IMesh::createInstance).collect(Collectors.toList());
-            final IMesh sphere = loadMeshList("/sphere.obj").get(0);
+            //final IMesh sphere = loadMeshList("/sphere.obj").get(0);
             IGPUImage t2 = null;
             try {
                 t2 = IGPUImage.read(LightCycle.class.getResource("/textures/glow.png"));
@@ -311,7 +308,7 @@ public class LightCycle {
             //add nPower powerups
             for(int i = 0; i < nPower/3; i++) {
 
-                spheres[i] = createColorSphere(new RGB(0.8f, 0.2f, 0.2f));
+                spheres[i] = createColorSphere(new RGB(1, 0.5f, 0.5f));
                 powerup[i] = currentScene.createGameObject();
                 Random r = new Random();
                 int rx = r.nextInt(2 * groundsize) - groundsize;
@@ -324,7 +321,7 @@ public class LightCycle {
                 powerup[i].addComponent(BoxCollider.class).setTrigger(true);
             }
             for(int i = nPower / 3; i < 2*(nPower/3); i++) {
-                spheres[i] = createColorSphere(new RGB(0.1f, 0.6f, 0.4f));
+                spheres[i] = createColorSphere(new RGB(0.5f, 1, 0.5f));
                 powerup[i] = currentScene.createGameObject();
                 Random r = new Random();
                 int rx = r.nextInt(2 * groundsize) - groundsize;
@@ -337,7 +334,7 @@ public class LightCycle {
                 powerup[i].addComponent(BoxCollider.class).setTrigger(true);
             }
             for(int i = 2*(nPower/3); i < nPower; i++) {
-                spheres[i] = createColorSphere(new RGB(0.1f, 0.2f, 0.7f));
+                spheres[i] = createColorSphere(new RGB(0.5f, 0.5f, 1f));
                 powerup[i] = currentScene.createGameObject();
                 Random r = new Random();
                 int rx = r.nextInt(2 * groundsize) - groundsize;
@@ -498,7 +495,7 @@ public class LightCycle {
 
     private static IMesh createColorSphere(RGB color) {
         GeodesicSphere s = new GeodesicSphere(2, true);
-        IMaterial solidMaterial = new ShadedMaterial(RGB.BLACK, color, color, RGB.BLACK, 30, 10, 1);
+        IMaterial solidMaterial = new ShadedMaterial(RGB.BLACK, color, color, color.scaleRGB(1.1f), 1, 1, 1);
         return new DefaultMesh(Primitive.TRIANGLES, solidMaterial, DefaultGeometry.createVNM(s.getTriangles(), s.getNormals(), s.getTexCoords()), Queue.DEPTH);
     }
 }
