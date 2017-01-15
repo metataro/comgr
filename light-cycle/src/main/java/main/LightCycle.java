@@ -144,6 +144,7 @@ public class LightCycle {
             //ILight light1 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
             //ILight light2 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
             ILight light3 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
+            ILight light4 = new SpotLight(Vec3.ZERO, RGB.YELLOW, RGB.YELLOW, Vec3.Z, 30, 1f);
             currentScene.getRenderManager().addLight(mainLight1);
             currentScene.getRenderManager().addLight(mainLight2);
             
@@ -169,8 +170,11 @@ public class LightCycle {
             }
             final IMesh boostPower1 = MeshUtilities.createQuad(new ShadedMaterial(RGB.WHITE, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 10, 1, t2), Queue.TRANSPARENCY, EnumSet.of(Flag.DONT_CAST_SHADOW));//loadMeshList("/boostPower.obj").get(0);
             final IMesh boostPower2 = boostPower1.createInstance();
-            final List<IMesh> fakeCameraMesh = loadMeshList("/camera.obj");
-
+            final List<IMesh> player1FakeCameraMesh = loadMeshList("/camera.obj");
+            for (IMesh a : player1FakeCameraMesh) {
+                java.lang.System.out.println(Arrays.toString(a.getMaterial().getData()));
+            }
+            final List<IMesh> player2FakeCameraMesh = player1FakeCameraMesh.stream().map(IMesh::createInstance).collect(Collectors.toList());
 
             //Ground
             GameObject ground = currentScene.createGameObject();
@@ -187,16 +191,16 @@ public class LightCycle {
             player1Behaviour.setButtons(Buttons.P1_LEFT, Buttons.P1_RIGHT, Buttons.P1_SPEED);
             player1Behaviour.setTrailMaterial("wall_green");
 
-            // fake camera wrapper
-            GameObject fakeCameraWrapper = currentScene.createGameObject();
-            fakeCameraWrapper.getTransform().setLocal(Mat4.translate(0,10f,10f));
-            fakeCameraWrapper.addComponent(FilmingAI.class).setTarget(player1.getTransform());
+            // player 1 fake camera wrapper
+            GameObject player1FakeCameraWrapper = currentScene.createGameObject();
+            player1FakeCameraWrapper.getTransform().setLocal(Mat4.translate(0,10f,10f));
+            player1FakeCameraWrapper.addComponent(FilmingAI.class).setTarget(player1.getTransform());
 
-            // fake camera
-            GameObject fakeCamera = currentScene.createGameObject(fakeCameraWrapper.getTransform());
-            fakeCamera.getTransform().setLocal(Mat4.rotate(50, 1, 0, 0));
-            fakeCamera.addComponent(MeshGroup.class).setMeshes(fakeCameraMesh);
-            fakeCamera.addComponent(Light.class).setLight(light3);
+            // player 1 fake camera
+            GameObject player1FakeCamera = currentScene.createGameObject(player1FakeCameraWrapper.getTransform());
+            player1FakeCamera.getTransform().setLocal(Mat4.rotate(50, 1, 0, 0));
+            player1FakeCamera.addComponent(MeshGroup.class).setMeshes(player1FakeCameraMesh);
+            player1FakeCamera.addComponent(Light.class).setLight(light3);
 
             // player 1 Boostpower
             GameObject player1Boostpower = currentScene.createGameObject(player1.getTransform());
@@ -317,6 +321,17 @@ public class LightCycle {
             component.Camera player2CameraComponent = player2CameraObject.addComponent(component.Camera.class);
             player2CameraComponent.setState(player2View, player2Camera);
             //player2CameraObject.addComponent(Light.class).setLight(light2);
+
+            // player 2 fake camera wrapper
+            GameObject player2FakeCameraWrapper = currentScene.createGameObject();
+            player2FakeCameraWrapper.getTransform().setLocal(Mat4.translate(0,10f,-10f));
+            player2FakeCameraWrapper.addComponent(FilmingAI.class).setTarget(player2.getTransform());
+
+            // player 2fake camera
+            GameObject player2FakeCamera = currentScene.createGameObject(player2FakeCameraWrapper.getTransform());
+            player2FakeCamera.getTransform().setLocal(Mat4.rotate(50, 1, 0, 0));
+            player2FakeCamera.addComponent(MeshGroup.class).setMeshes(player2FakeCameraMesh);
+            player2FakeCamera.addComponent(Light.class).setLight(light4);
 
             // attach listeners to game objects
             player1CameraObject.addComponent(AudioListenerComoponent.class).setAudioListener(currentScene.getAudioController().getAudioListener(0));
