@@ -7,6 +7,7 @@ import component.behaviour.PlayerBehaviour;
 import component.collider.Collider;
 import gameobject.GameObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Event {
@@ -44,9 +45,11 @@ public class Event {
 
     public static class PlayerWonEvent extends Event{
         public final PlayerBehaviour playerBehaviour;
-        public PlayerWonEvent(Object sender, PlayerBehaviour playerBehaviour) {
+        public final List<PlayerBehaviour> losers;
+        public PlayerWonEvent(Object sender, PlayerBehaviour playerBehaviour, List<PlayerBehaviour> losers) {
             super(sender);
             this.playerBehaviour = playerBehaviour;
+            this.losers = losers;
         }
     }
 

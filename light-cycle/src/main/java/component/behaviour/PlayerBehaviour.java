@@ -245,8 +245,12 @@ public class PlayerBehaviour extends Behaviour {
     public void setBoostPowerObject(GameObject boostPowerObject) {
         this.boostPowerObject = boostPowerObject;
     }
-    
-    public void onDraw(){
+
+    public void onLose() {
+        updateCameraPositionToEnd();
+    }
+
+    public void onDraw() {
     	IGPUImage t = null;
         try {
             t = IGPUImage.read(LightCycle.class.getResource("/textures/draw.png"));
@@ -259,14 +263,14 @@ public class PlayerBehaviour extends Behaviour {
     	g.addComponent(Mesh.class).setMesh(raw);
         updateCameraPositionToEnd();
     }
-    public void onWin(){
+
+    public void onWin() {
     	IGPUImage t = null;
         try {
-        	if(name.contains("1")){
+        	if (name.contains("1")) {
         		t = IGPUImage.read(LightCycle.class.getResource("/textures/player1won.png"));
-        	}else{
+        	} else {
         		t = IGPUImage.read(LightCycle.class.getResource("/textures/player2won.png"));
-        		
             }
         } catch (IOException e) {
             e.printStackTrace();
