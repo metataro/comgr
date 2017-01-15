@@ -17,8 +17,8 @@ public class PowerUpBehaviour extends Behaviour {
 
     private AudioBuffer sound;
 
-    private float minY = 0.15f;
-    private float maxY = 0.45f;
+    private float minY = 0.15f;//0.15f;
+    private float maxY = 0.5f;//0.45f;
 	private float bumpSpeed = 2f;
 	private float modifier = 0;
 
