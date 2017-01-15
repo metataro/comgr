@@ -21,7 +21,6 @@ import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
-import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 import ch.fhnw.ether.view.IView;
@@ -55,7 +54,6 @@ import scene.Scene;
 import system.*;
 
 import java.io.IOException;
-import java.lang.System;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -180,6 +178,11 @@ public class LightCycle {
             player1Behaviour.setButtons(Buttons.P1_LEFT, Buttons.P1_RIGHT, Buttons.P1_SPEED);
             player1Behaviour.setTrailMaterial("wall_green");
 
+            // player 1 max distance to center
+            BoundaryCrashBehaviour player1BoundaryBehaviour = player1.addComponent(BoundaryCrashBehaviour.class);
+            player1BoundaryBehaviour.setMaxDistanceToCenter(playAreaExtends - 1f);
+            player1BoundaryBehaviour.setPlayerBehaviour(player1Behaviour);
+
             // player 1 fake camera wrapper
             GameObject player1FakeCameraWrapper = currentScene.createGameObject();
             player1FakeCameraWrapper.getTransform().setLocal(Mat4.translate(0,10f,10f));
@@ -238,6 +241,11 @@ public class LightCycle {
             player2Behaviour.setName("Player 2");
             player2Behaviour.setButtons(Buttons.P2_LEFT, Buttons.P2_RIGHT, Buttons.P2_SPEED);
             player2Behaviour.setTrailMaterial("wall_yellow");
+
+            // player 2 max distance to center
+            BoundaryCrashBehaviour player2Boundary = player2.addComponent(BoundaryCrashBehaviour.class);
+            player2Boundary.setMaxDistanceToCenter(playAreaExtends - 1f);
+            player2Boundary.setPlayerBehaviour(player2Behaviour);
 
             // player 2 Boostpower
             GameObject player2Boostpower = currentScene.createGameObject(player2.getTransform());
@@ -462,7 +470,7 @@ public class LightCycle {
         }
 
         IGeometry geometry = DefaultGeometry.createVM(v, m);
-        return new DefaultMesh(Primitive.TRIANGLES, material, geometry, Queue.TRANSPARENCY, Flag.DONT_CAST_SHADOW);
+        return new DefaultMesh(Primitive.TRIANGLES, material, geometry, Queue.TRANSPARENCY, Flag.DONT_CAST_SHADOW, Flag.DONT_CULL_FACE);
     }
 
     public static void main(String[] args) throws InterruptedException, IOException, RenderCommandException {
