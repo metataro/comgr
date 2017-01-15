@@ -50,6 +50,17 @@ public class GameObject {
         return component == null ? Optional.empty() : Optional.of((T)component);
     }
 
+    public <T extends Component> boolean removeComponent(Class<T> type) {
+        if (components.containsKey(type.getSimpleName())) {
+            Component c = components.get(type.getSimpleName());
+            scene.getComponentManager().removeComponent(c);
+            components.remove(type.getSimpleName());
+            c.destroy();
+            return true;
+        }
+        return false;
+    }
+
     public void destroy() {
         components.values().forEach(c -> {
             scene.getComponentManager().removeComponent(c);
