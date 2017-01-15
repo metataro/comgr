@@ -137,8 +137,8 @@ public class LightCycle {
             currentScene.addSystem(ProcessType.Draw, new RenderSystem());
 
             // cameras
-            ICamera player1Camera = new Camera();
-            ICamera player2Camera = new Camera(Vec3.ZERO, Vec3.Z);
+            ICamera player1Camera = new Camera(Vec3.ZERO, Vec3.Z_NEG, Vec3.Y, 70, 0.01f, 100000f);
+            ICamera player2Camera = new Camera(Vec3.ZERO, Vec3.Z    , Vec3.Y, 70, 0.01f, 100000f);
 
             // lights
             ILight mainLight1 = new DirectionalLight(new Vec3(0.5, 1, -0.5), RGB.BLACK, RGB.GRAY80);
