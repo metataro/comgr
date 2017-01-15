@@ -60,6 +60,10 @@ public class Transform extends Component implements SceneGraphNode<Transform> {
         return new Vec3(local.m02, local.m12, local.m22).normalize();
     }
 
+    public Vec3 getLocalLeft() {
+        return new Vec3(local.m01, local.m11, local.m21).normalize();
+    }
+
     public Vec3 getUp() {
         return new Vec3(world.m01, world.m11, world.m21);
     }
@@ -86,6 +90,13 @@ public class Transform extends Component implements SceneGraphNode<Transform> {
 
     public Vec3 getEulerAngles() {
         return getEulerAngles(world);
+    }
+
+    public Vec3 getLocalScale() {
+        float sx = (float) Math.sqrt(local.m00 * local.m00 + local.m01 * local.m01 + local.m02 * local.m02);
+        float sy = (float) Math.sqrt(local.m10 * local.m10 + local.m11 * local.m11 + local.m12 * local.m12);
+        float sz = (float) Math.sqrt(local.m20 * local.m20 + local.m21 * local.m21 + local.m22 * local.m22);
+        return new Vec3(sx, sy, sz);
     }
 
     public Vec3 getScale() {
