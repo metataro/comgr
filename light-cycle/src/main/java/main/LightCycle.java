@@ -55,6 +55,7 @@ import scene.Scene;
 import system.*;
 
 import java.io.IOException;
+import java.lang.System;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -530,18 +531,21 @@ public class LightCycle {
                 { scale, -scale, -scale, scale, -scale, scale, scale, scale, scale, scale, -scale, -scale, scale, scale, scale, scale, scale, -scale }, // Left
                 { -scale, -scale, -scale, scale, -scale, -scale, scale, scale, -scale, -scale, -scale, -scale, scale, scale, -scale, -scale, scale, -scale}, // Back
                 { -scale, -scale, scale, -scale, -scale, -scale, -scale, scale, -scale, -scale, -scale, scale, -scale, scale, -scale, -scale, scale, scale }, // Right
+                { -scale, -scale, scale, scale, -scale, scale, scale, -scale, -scale, -scale, -scale, scale, scale, -scale, -scale, -scale, -scale, -scale }, // Bottom
         };
         final String[] textureNames = {
                 "/textures/front.png",
                 "/textures/left.png",
                 "/textures/back.png",
                 "/textures/right.png",
+                "/textures/bot.png",
         };
         final float[][] texCoords = {
                 { 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0 },
                 { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 },
                 { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 },
                 { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 },
+                { 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0 },
         };
 
         ArrayList<IMesh> result = new ArrayList<>(vertices.length);
