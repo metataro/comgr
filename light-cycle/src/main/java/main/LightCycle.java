@@ -20,11 +20,7 @@ import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-<<<<<<< HEAD
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
-=======
-import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
->>>>>>> d5dd664eb9ced96dd900e9ae53e08653d3d47f68
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 import ch.fhnw.ether.view.IView;
