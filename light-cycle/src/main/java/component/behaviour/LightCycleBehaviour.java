@@ -20,7 +20,7 @@ public class LightCycleBehaviour extends Behaviour {
     private AudioBuffer tronEngine;
     private AudioBuffer explosion;
     private boolean collided = false;
-    private PlayerBehaviour playerBehaviour;
+    public PlayerBehaviour playerBehaviour;
 
     public void setPlayerBehaviour(PlayerBehaviour playerBehaviour) {
         this.playerBehaviour = playerBehaviour;

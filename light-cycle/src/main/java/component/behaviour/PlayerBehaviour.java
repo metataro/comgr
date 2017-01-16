@@ -39,7 +39,7 @@ public class PlayerBehaviour extends Behaviour {
     private boolean alive;
     private float boostTime = 1;
 
-    private String name;
+    public String name;
 
     private String leftButton;
     private String rightButton;
