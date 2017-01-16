@@ -1,5 +1,9 @@
 package component.behaviour;
 
+import ch.fhnw.util.color.RGBA;
+import component.MeshGroup;
+import component.particle.ParticleSystem;
+
 public class BoundaryCrashBehaviour extends Behaviour {
 
     private float maxDistanceToCenter = 100f;
@@ -21,6 +25,10 @@ public class BoundaryCrashBehaviour extends Behaviour {
             if(this.getGameObject().getTransform().getPosition().length() > this.maxDistanceToCenter) {
                 // Player is too far away, dies
                 this.playerBehaviour.setAlive(false);
+
+                // Explosion
+                this.getGameObject().removeComponent(MeshGroup.class);
+                this.getGameObject().getComponent(ParticleSystem.class).ifPresent(p -> p.emmitParticles(RGBA.BLACK, 0.1f, 0.5f,100));
             }
         }
     }

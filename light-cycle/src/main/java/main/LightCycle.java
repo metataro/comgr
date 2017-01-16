@@ -184,11 +184,6 @@ public class LightCycle {
             player1Behaviour.setButtons(Buttons.P1_LEFT, Buttons.P1_RIGHT, Buttons.P1_SPEED);
             player1Behaviour.setTrailMaterial("wall_green");
 
-            // player 1 max distance to center
-            BoundaryCrashBehaviour player1BoundaryBehaviour = player1.addComponent(BoundaryCrashBehaviour.class);
-            player1BoundaryBehaviour.setMaxDistanceToCenter(playAreaExtends - 1f);
-            player1BoundaryBehaviour.setPlayerBehaviour(player1Behaviour);
-
             // player 1 fake camera wrapper
             GameObject player1FakeCameraWrapper = currentScene.createGameObject();
             player1FakeCameraWrapper.getTransform().setLocal(Mat4.translate(0,10f,10f));
@@ -224,6 +219,11 @@ public class LightCycle {
             float yOffset = -0.53f;
             player1Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, yOffset, 1.1f), Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0), Mat4.rotate(180,0,0,1)));
 
+            // player 1 max distance to center
+            BoundaryCrashBehaviour player1BoundaryBehaviour = player1Vehicle.addComponent(BoundaryCrashBehaviour.class);
+            player1BoundaryBehaviour.setMaxDistanceToCenter(playAreaExtends - 1f);
+            player1BoundaryBehaviour.setPlayerBehaviour(player1Behaviour);
+
             // player 1 camera follow
             GameObject player1CameraFollow = currentScene.createGameObject();
             player1CameraFollow.addComponent(FollowBehaviour.class).setTarget(player1.getTransform());
@@ -249,11 +249,6 @@ public class LightCycle {
             player2Behaviour.setButtons(Buttons.P2_LEFT, Buttons.P2_RIGHT, Buttons.P2_SPEED);
             player2Behaviour.setTrailMaterial("wall_yellow");
 
-            // player 2 max distance to center
-            BoundaryCrashBehaviour player2Boundary = player2.addComponent(BoundaryCrashBehaviour.class);
-            player2Boundary.setMaxDistanceToCenter(playAreaExtends - 1f);
-            player2Boundary.setPlayerBehaviour(player2Behaviour);
-
             // player 2 Boostpower
             GameObject player2Boostpower = currentScene.createGameObject(player2.getTransform());
             player2Boostpower.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, -0.49999f, 1), Mat4.scale(0.6f, 1, 1), Mat4.rotate(-90, 1, 0, 0)));
@@ -272,6 +267,11 @@ public class LightCycle {
             maxExtent = Math.max(player2VehicleMeshGroup.getBounds().getExtentX(), Math.max(player2VehicleMeshGroup.getBounds().getExtentY(), player2VehicleMeshGroup.getBounds().getExtentZ()));
             yOffset = -0.53f;
             player2Vehicle.getTransform().setLocal(Mat4.multiply(Mat4.translate(0, yOffset, 1.1f), Mat4.multiply(Mat4.scale(1f / maxExtent), Mat4.rotate(90,0,0,1), Mat4.rotate(90,0,1,0),Mat4.rotate(180,0,0,1))));
+
+            // player 2 max distance to center
+            BoundaryCrashBehaviour player2Boundary = player2Vehicle.addComponent(BoundaryCrashBehaviour.class);
+            player2Boundary.setMaxDistanceToCenter(playAreaExtends - 1f);
+            player2Boundary.setPlayerBehaviour(player2Behaviour);
 
             // player 2 camera follow
             GameObject player2CameraFollow = currentScene.createGameObject();
