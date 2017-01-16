@@ -29,7 +29,7 @@ void main() {
 	gl_Position = position;
 
     // TODO: This might be really bad performance wise, change!!
-	vec4[] objects = { objectDistance0, objectDistance1, objectDistance2, objectDistance3 };
+	vec4[] objects = vec4[](objectDistance0, objectDistance1, objectDistance2, objectDistance3);
 
     alphaMod = 0;
 
