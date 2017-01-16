@@ -204,7 +204,7 @@ public class PlayerBehaviour extends Behaviour {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        trailMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 1f, t);
+        trailMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 0.5f, 1f, t);
         addTrailSegment();
     }
 
