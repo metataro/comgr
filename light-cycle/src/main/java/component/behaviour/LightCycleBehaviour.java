@@ -17,6 +17,7 @@ import java.util.Optional;
 
 public class LightCycleBehaviour extends Behaviour {
 
+    private float maxDistanceToCenter = 100f;
     private AudioBuffer tronEngine;
     private AudioBuffer explosion;
     private boolean collided = false;
@@ -24,6 +25,10 @@ public class LightCycleBehaviour extends Behaviour {
 
     public void setPlayerBehaviour(PlayerBehaviour playerBehaviour) {
         this.playerBehaviour = playerBehaviour;
+    }
+
+    public void setMaxDistanceToCenter(float maxDistanceToCenter) {
+        this.maxDistanceToCenter = maxDistanceToCenter;
     }
 
     @Override
@@ -46,6 +51,10 @@ public class LightCycleBehaviour extends Behaviour {
                     a.stop();
                 }
             });
+        } else {
+            if(this.getGameObject().getTransform().getPosition().length() > this.maxDistanceToCenter) {
+                onCollision(getGameObject());
+            }
         }
     }
 
