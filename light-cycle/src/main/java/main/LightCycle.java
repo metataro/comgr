@@ -530,12 +530,12 @@ public class LightCycle {
         IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.WHITE, RGB.WHITE, RGB.WHITE, 10, 1, 0.8f, groundTexture);
 
         // Create meshes
-        List<IMesh> groundMeshes = createGroundPlane(textureMaterial, groundSize, 20);
+        IMesh groundMesh = createGroundPlane(textureMaterial, groundSize, 20);
 
         // Create game object
         GameObject ground = currentScene.createGameObject();
-        MeshGroup meshComponent = ground.addComponent(MeshGroup.class);
-        meshComponent.setMeshes(groundMeshes);
+        Mesh meshComponent = ground.addComponent(Mesh.class);
+        meshComponent.setMesh(groundMesh);
 
         return ground;
     }
@@ -552,7 +552,7 @@ public class LightCycle {
     public static GameObject getMirrorPowerUp(int i){
     	return powerupm[i];
     }
-	public static List<IMesh> createGroundPlane(IMaterial material, float extent, int tileCount) {
+	public static IMesh createGroundPlane(IMaterial material, float extent, int tileCount) {
 		float y = -0.5f;
 
 		// Normals
@@ -563,39 +563,33 @@ public class LightCycle {
 
         // Tex coords
         final float[] m = {
-            1, 0, 0, 0, 1, 1,
-            1, 1, 0, 0, 0, 1,
+            tileCount, 0, 0, 0, tileCount, tileCount,
+            tileCount, tileCount, 0, 0, 0, tileCount,
         };
 
 		// Calculate tile size per dimension
-        float tileSize = 2 * extent / tileCount;
+        float tileSize = 2 * extent;
 
         // Create tiles
 		List<IMesh> result = new ArrayList<>(tileCount * tileCount);
-        for(int tileZ = 0; tileZ < tileCount; tileZ++) {
-            for(int tileX = 0; tileX < tileCount; tileX++) {
-                // Calculate tile position
-                float posX = tileX * tileSize - extent;
-                float posZ = tileZ * tileSize - extent;
+        // Calculate tile position
+        float posX = -extent;
+        float posZ = -extent;
 
-                // Calculate tile vertices
-                float[] v = {
-                        posX + tileSize, y, posZ,
-                        posX, y, posZ,
-                        posX + tileSize, y, posZ + tileSize,
+        // Calculate tile vertices
+        float[] v = {
+                posX + tileSize, y, posZ,
+                posX, y, posZ,
+                posX + tileSize, y, posZ + tileSize,
 
-                        posX + tileSize, y, posZ + tileSize,
-                        posX, y, posZ,
-                        posX, y, posZ + tileSize,
-                };
+                posX + tileSize, y, posZ + tileSize,
+                posX, y, posZ,
+                posX, y, posZ + tileSize,
+        };
 
-                // Create tile geometry and mesh
-                IGeometry tileGeometry = requireTexCoords(material) ? DefaultGeometry.createVNM(v, n, m) :  DefaultGeometry.createVN(v, n);
-                result.add(new DefaultMesh(Primitive.TRIANGLES, material, tileGeometry, Queue.TRANSPARENCY,  Flag.DONT_CAST_SHADOW));
-            }
-        }
-
-		return result;
+        // Create tile geometry and mesh
+        IGeometry tileGeometry = requireTexCoords(material) ? DefaultGeometry.createVNM(v, n, m) :  DefaultGeometry.createVN(v, n);
+        return new DefaultMesh(Primitive.TRIANGLES, material, tileGeometry, Queue.TRANSPARENCY,  Flag.DONT_CAST_SHADOW);
 	}
 	
 	private static boolean requireTexCoords(IMaterial material) {
